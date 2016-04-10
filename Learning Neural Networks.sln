@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningNeuralNetworks.Tests", "LearningNeuralNetworks.Tests\LearningNeuralNetworks.Tests.csproj", "{9606E340-F3F3-4523-A666-1F33D54143D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningNeuralNetworks", "LearningNeuralNetworks\LearningNeuralNetworks.csproj", "{2ADA74E1-2E00-45D4-ADE8-8D80836DD040}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9606E340-F3F3-4523-A666-1F33D54143D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9606E340-F3F3-4523-A666-1F33D54143D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9606E340-F3F3-4523-A666-1F33D54143D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9606E340-F3F3-4523-A666-1F33D54143D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2ADA74E1-2E00-45D4-ADE8-8D80836DD040}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2ADA74E1-2E00-45D4-ADE8-8D80836DD040}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2ADA74E1-2E00-45D4-ADE8-8D80836DD040}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2ADA74E1-2E00-45D4-ADE8-8D80836DD040}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
