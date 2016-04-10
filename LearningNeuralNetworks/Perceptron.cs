@@ -11,7 +11,6 @@ namespace LearningNeuralNetworks
         public int bias;
         public IList<Pinput> Inputs;
 
-        public bool IsFiring { get { return Inputs == null ? bias > 0 : Inputs.DotProduct() + bias > 0; }
-        }
+        public bool IsFiring { get { return Inputs.DotProduct() + bias > 0; } }
     }
 }

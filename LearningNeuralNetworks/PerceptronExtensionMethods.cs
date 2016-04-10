@@ -7,7 +7,9 @@ namespace LearningNeuralNetworks
     {
         public static int DotProduct(this IEnumerable<Pinput> inputs)
         {
-            return inputs.Sum(i => i.Source.IsFiring ? i.weight : 0);
+            return inputs==null ?
+                    0 
+                    : inputs.Sum(i => i.Source.IsFiring ? i.weight : 0);
         }
     }
 }
