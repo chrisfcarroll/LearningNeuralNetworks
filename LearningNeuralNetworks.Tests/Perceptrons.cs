@@ -23,7 +23,7 @@ namespace LearningNeuralNetworks.Tests
         [TestCase(false, "is the output of", true, true, true)]
         public void Can_model_Nand(bool expected, string descr, params bool[] fixedInputSensors)
         {
-            var inputs = fixedInputSensors.Select(x => PerceptronBuilder.FixedSensor(x));
+            var inputs = fixedInputSensors.Select(PerceptronBuilder.FixedSensor);
             //
             PerceptronBuilder.Nand(inputs).IsFiring.ShouldBe(expected);
         }

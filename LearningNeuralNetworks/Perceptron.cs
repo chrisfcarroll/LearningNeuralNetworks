@@ -11,6 +11,17 @@ namespace LearningNeuralNetworks
         public int bias;
         public IList<Pinput> Inputs;
 
-        public bool IsFiring { get { return Inputs.DotProduct() + bias > 0; } }
+        public bool IsFiring => Inputs.DotProduct() + bias > 0;
+    }
+
+    public struct Pinput
+    {
+        public int weight;
+        public Perceptron Source;
+        public Pinput(Perceptron source, int weight) : this()
+        {
+            this.weight = weight;
+            this.Source = source;
+        }
     }
 }
