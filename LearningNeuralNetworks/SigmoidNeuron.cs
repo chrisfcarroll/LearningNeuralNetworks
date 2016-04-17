@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 
 namespace LearningNeuralNetworks
 {
     /// <summary>
-    /// Models a Perceptron, see e.g. <see href="http://neuralnetworksanddeeplearning.com/chap1.html#perceptrons">this introduction</see>. 
-    /// With integers, not Reals
+    /// Models a Sigmoid Neuron, see e.g. <see href="http://neuralnetworksanddeeplearning.com/chap1.html#sigmoid_neurons">this introduction</see>.
     /// </summary>
     public struct SigmoidNeuron
     {
@@ -19,7 +17,8 @@ namespace LearningNeuralNetworks
         public ZeroToOne FiringRate => (Inputs.DotProduct() + bias).Sigmoid();
     }
 
-    public struct Sinput
+	///<summary>Models a weighted input to a <see cref="SigmoidNeuron"/> </summary>
+  	public struct Sinput
     {
         public double weight;
         public SigmoidNeuron Source;
@@ -30,7 +29,10 @@ namespace LearningNeuralNetworks
         }
     }
 
-    public struct ZeroToOne
+	/// <summary>
+	/// Models a double value in the range 0 &lt;= value &lt;= 1
+	/// </summary>
+  	public struct ZeroToOne
     {
         readonly double value;
 
@@ -40,8 +42,13 @@ namespace LearningNeuralNetworks
             value = input;
         }
 
-        public static implicit operator double(ZeroToOne input) { return input.value;}
+	  	///<returns>True if and only if this value > 0.5d</returns>
+      	public bool AsBool => value > 0.5d;
+
+      public static implicit operator double(ZeroToOne input) { return input.value;}
         public static implicit operator ZeroToOne(double input) { return new ZeroToOne(input);}
+        public static implicit operator bool(ZeroToOne input) { return input.AsBool;}
+        public static implicit operator ZeroToOne(bool input) { return new ZeroToOne(input?1:0);}
 
         public override string ToString() { return value.ToString(); }
     }

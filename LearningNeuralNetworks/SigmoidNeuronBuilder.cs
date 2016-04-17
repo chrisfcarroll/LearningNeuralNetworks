@@ -16,7 +16,7 @@ namespace LearningNeuralNetworks
             var num = inputs.Count();
             var nand = new SigmoidNeuron
             {
-                bias = SigmoidNeuron.High * num,
+                bias = num * SigmoidNeuron.High,
                 Inputs = inputs.Select(p => new Sinput(p, -SigmoidNeuron.High)).ToArray()
             };
             return nand;

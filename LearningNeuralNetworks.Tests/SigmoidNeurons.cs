@@ -17,28 +17,33 @@ namespace LearningNeuralNetworks.Tests
             sigmoidNeuron.Inputs.ShouldCompile();
         }
 
-        [TestCase(1d,  "is the output of", SigmoidNeuron.High, 0)]
-        [TestCase(1d,  "is the output of", SigmoidNeuron.High, SigmoidNeuron.High, SigmoidNeuron.High, 0)]
-        [TestCase(0d, "is the output of", SigmoidNeuron.High, SigmoidNeuron.High)]
-        [TestCase(0d, "is the output of", SigmoidNeuron.High, SigmoidNeuron.High, SigmoidNeuron.High, SigmoidNeuron.High)]
-        [Test, Ignore("Exploring")]
-        public void Can_model_Nand(double expected, string descr, params double[] fixedInputSensors)
+        [TestCase(true,  "is the binary output of", SigmoidNeuron.High, 0)]
+        [TestCase(true,  "is the binary output of", SigmoidNeuron.High, SigmoidNeuron.High, SigmoidNeuron.High, 0)]
+        [TestCase(false, "is the binary output of", SigmoidNeuron.High, SigmoidNeuron.High)]
+        [TestCase(false, "is the binary output of", SigmoidNeuron.High, SigmoidNeuron.High, SigmoidNeuron.High, SigmoidNeuron.High)]
+        public void Can_model_binary_Nand(bool expected, string descr, params double[] fixedInputSensors)
         {
             var inputs = fixedInputSensors.Select(SigmoidNeuronBuilder.FixedSensor);
             //
-            var result = SigmoidNeuronBuilder.Nand(inputs);
+          	bool isOn = SigmoidNeuronBuilder.Nand(inputs).FiringRate;
             //
-            result.FiringRate.ShouldBe( (ZeroToOne)expected);
+            isOn.ShouldBe(expected);
         }
 
-        [Test, Ignore("Exploring")]
-        public void Can_model_Or()
+        [Test]
+        public void Can_model_binary_Or()
         {
-            SigmoidNeuronBuilder.Or(SigmoidNeuronBuilder.FixedSensorOn(), SigmoidNeuronBuilder.FixedSensorOff()).FiringRate.ShouldBe(1);
-            SigmoidNeuronBuilder.Or(SigmoidNeuronBuilder.FixedSensorOff(), SigmoidNeuronBuilder.FixedSensorOff(),SigmoidNeuronBuilder.FixedSensorOn(), SigmoidNeuronBuilder.FixedSensorOff()).FiringRate.ShouldBe(1);
+            SigmoidNeuronBuilder.Or(SigmoidNeuronBuilder.FixedSensorOn(), SigmoidNeuronBuilder.FixedSensorOff())
+              	.FiringRate.AsBool
+              	.ShouldBeTrue();
 
-            var result = SigmoidNeuronBuilder.Or(SigmoidNeuronBuilder.FixedSensorOff(), SigmoidNeuronBuilder.FixedSensorOff());
-            result.FiringRate.ShouldBe(0);
+            SigmoidNeuronBuilder.Or(SigmoidNeuronBuilder.FixedSensorOff(), SigmoidNeuronBuilder.FixedSensorOff(),SigmoidNeuronBuilder.FixedSensorOn(), SigmoidNeuronBuilder.FixedSensorOff())
+              	.FiringRate.AsBool
+              	.ShouldBeTrue();
+
+            SigmoidNeuronBuilder.Or(SigmoidNeuronBuilder.FixedSensorOff(), SigmoidNeuronBuilder.FixedSensorOff())
+              	.FiringRate.AsBool
+              	.ShouldBeFalse();
         }
     }
 }
