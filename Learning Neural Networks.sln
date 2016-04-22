@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningNeuralNetworks.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningNeuralNetworks", "LearningNeuralNetworks\LearningNeuralNetworks.csproj", "{2ADA74E1-2E00-45D4-ADE8-8D80836DD040}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MnistParser", "MnistParser\MnistParser.csproj", "{C33E14DC-81F1-4EFD-9367-A99567C5A46C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MnistParser.Tests", "UnitTestProject1\MnistParser.Tests.csproj", "{77BF4699-86B8-4BF3-88CF-86F05892DD28}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{2ADA74E1-2E00-45D4-ADE8-8D80836DD040}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2ADA74E1-2E00-45D4-ADE8-8D80836DD040}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2ADA74E1-2E00-45D4-ADE8-8D80836DD040}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C33E14DC-81F1-4EFD-9367-A99567C5A46C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C33E14DC-81F1-4EFD-9367-A99567C5A46C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C33E14DC-81F1-4EFD-9367-A99567C5A46C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C33E14DC-81F1-4EFD-9367-A99567C5A46C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77BF4699-86B8-4BF3-88CF-86F05892DD28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77BF4699-86B8-4BF3-88CF-86F05892DD28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77BF4699-86B8-4BF3-88CF-86F05892DD28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77BF4699-86B8-4BF3-88CF-86F05892DD28}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

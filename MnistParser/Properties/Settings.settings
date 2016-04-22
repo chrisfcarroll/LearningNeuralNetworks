@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="MnistParser.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="MnistDataDirectory" Type="System.String" Scope="Application">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="trainImagesFileName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">train-Images.Idx3-ubyte</Value>
+    </Setting>
+    <Setting Name="trainLabelsFileName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">train-labels.idx1-ubyte</Value>
+    </Setting>
+    <Setting Name="testImagesFileName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">t10k-images.idx3-ubyte</Value>
+    </Setting>
+    <Setting Name="testLabelsFileName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">t10k-labels.idx1-ubyte</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
