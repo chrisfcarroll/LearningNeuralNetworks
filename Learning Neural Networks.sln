@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearningNeuralNetworks", "L
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MnistParser", "MnistParser\MnistParser.csproj", "{C33E14DC-81F1-4EFD-9367-A99567C5A46C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MnistParser.Tests", "UnitTestProject1\MnistParser.Tests.csproj", "{77BF4699-86B8-4BF3-88CF-86F05892DD28}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MnistParser.Tests", "MnistParser.Tests\MnistParser.Tests.csproj", "{77BF4699-86B8-4BF3-88CF-86F05892DD28}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
