@@ -62,6 +62,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="TheMnistLearner1Builder.cs" />
     <Compile Include="SigmoidNeurons.cs" />
     <Compile Include="Perceptrons.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -75,6 +76,10 @@
     <ProjectReference Include="..\LearningNeuralNetworks\LearningNeuralNetworks.csproj">
       <Project>{2ADA74E1-2E00-45D4-ADE8-8D80836DD040}</Project>
       <Name>LearningNeuralNetworks</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MnistParser\MnistParser.csproj">
+      <Project>{c33e14dc-81f1-4efd-9367-a99567c5a46c}</Project>
+      <Name>MnistParser</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

@@ -12,6 +12,7 @@ namespace MnistParser
     /// </summary>
     public class MnistFilesReader
     {
+        public int MaximumImagesToRead { get; private set; }
         public bool IsLoaded { get; private set; }
         public Image[] TrainingImages { get; private set; }
         public byte[] TrainingLabels { get; private set; }
@@ -22,13 +23,15 @@ namespace MnistParser
         readonly string testImagesFileName;
         readonly string testLabelsFileName;
         /// <param name="mnistDataDirectory">The directory in which to find the four Mnist files</param>
-        public MnistFilesReader(string mnistDataDirectory, string trainingImagesFileName, string trainingLabelsFileName, string testImagesFileName, string testLabelsFileName)
+        public MnistFilesReader(string mnistDataDirectory, string trainingImagesFileName, string trainingLabelsFileName, string testImagesFileName, string testLabelsFileName, int maximumImagesToRead=int.MaxValue)
         {
+            MaximumImagesToRead = maximumImagesToRead;
             this.dataDirectory = mnistDataDirectory;
             this.trainingImagesFileName = trainingImagesFileName;
             this.trainingLabelsFileName = trainingLabelsFileName;
             this.testImagesFileName = testImagesFileName;
             this.testLabelsFileName = testLabelsFileName;
+            MaximumImagesToRead = maximumImagesToRead;
         }
         /// <param name="mnistDataDirectory">The directory in which to find the four Mnist files</param>
         public MnistFilesReader(string mnistDataDirectory = null) 
@@ -38,7 +41,16 @@ namespace MnistParser
                   Properties.Settings.Default.trainLabelsFileName,
                   Properties.Settings.Default.testImagesFileName,
                   Properties.Settings.Default.testLabelsFileName
-                  ){ }
+                  ){}
+
+        public MnistFilesReader(string mnistRealDataDirectory, int maximumImagesToRead) 
+            : this(
+                  mnistRealDataDirectory ?? Properties.Settings.Default.MnistDataDirectory,
+                  Properties.Settings.Default.trainImagesFileName,
+                  Properties.Settings.Default.trainLabelsFileName,
+                  Properties.Settings.Default.testImagesFileName,
+                  Properties.Settings.Default.testLabelsFileName,
+                  maximumImagesToRead: maximumImagesToRead) {}
 
         internal MnistFilesReader EnsureLoaded()
         {
@@ -71,13 +83,13 @@ namespace MnistParser
                 var trainingImages = new Image[numOfImages];
                 var i = 0;
                 var imageBuffer = new byte[Image.ByteSize];
-                while (await stream.ReadAsync(imageBuffer, 0, Image.ByteSize) > 0)
+                while (await stream.ReadAsync(imageBuffer, 0, Image.ByteSize) > 0 && i < MaximumImagesToRead)
                 {
                     Debug.Assert(i < numOfImages, "Expected " + numOfImages + " images but about to read past that.");
                     trainingImages[i] = new Image(imageBuffer);
                     i++;
                 }
-                Debug.Assert( i == numOfImages, "Expected " + numOfImages + " images but got " + i);
+                Debug.Assert( i == Math.Min(numOfImages, MaximumImagesToRead), "Expected " + Math.Min(numOfImages, MaximumImagesToRead) + " images but got " + i);
                 return trainingImages;
             }
         }
@@ -95,12 +107,12 @@ namespace MnistParser
                 //
                 var trainingLabels = new byte[numOfLabels];
                 var i = 0;
-                while (await stream.ReadAsync(buffer, 0, 1) > 0)
+                while (await stream.ReadAsync(buffer, 0, 1) > 0 && i < MaximumImagesToRead)
                 {
                     trainingLabels[i] = buffer[0];
                     i++;
                 }
-                Debug.Assert(i == numOfLabels, "Expected " + numOfLabels + " labels but got " + i);
+                Debug.Assert(i == Math.Min(numOfLabels, MaximumImagesToRead), "Expected " + Math.Min(numOfLabels, MaximumImagesToRead) + " labels but got " + i);
                 return trainingLabels;
             }
         }

@@ -14,7 +14,7 @@ namespace MnistParser.Tests
             [Test]
             public void UsesFourDefaultFileNames__GivenADataDirectory()
             {
-                Program.ReaderFromDirectoryAndFileNamesElseConfig(mnistRealDataDirectory);
+                Program.ReaderFromDirectoryAndFileNamesElseConfig(mnistRealDataDirectory,maxImagesToRead:2);
                 //
                 Program.MnistSource.ShouldBe(mnistRealDataDirectory);
                 Program.TrainImagesIdx3Ubyte.ShouldNotBeEmpty();
@@ -43,7 +43,7 @@ namespace MnistParser.Tests
             {
                 reader= (reader !=null && reader.IsLoaded) 
                             ? reader 
-                            : new MnistFilesReader(mnistRealDataDirectory).EnsureLoaded();
+                            : new MnistFilesReader(mnistRealDataDirectory,2).EnsureLoaded();
             }
         }
     }

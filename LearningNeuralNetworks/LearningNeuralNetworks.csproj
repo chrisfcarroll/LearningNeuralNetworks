@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MnistSigmoidLearner1Builder.cs" />
     <Compile Include="SigmoidNeuronBuilder.cs" />
     <Compile Include="SigmoidNeuron.cs" />
     <Compile Include="Perceptron.cs" />
@@ -54,6 +55,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MnistParser\MnistParser.csproj">
+      <Project>{c33e14dc-81f1-4efd-9367-a99567c5a46c}</Project>
+      <Name>MnistParser</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

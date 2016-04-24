@@ -7,14 +7,14 @@ namespace MnistParser
         public static void Main(params string[] args)
         {
             var reader = ReaderFromDirectoryAndFileNamesElseConfig(
-                            args?.Length > 0 ? args[0] : Properties.Settings.Default.MnistDataDirectory, 
+                            args?.Length > 0 ? args[0] : Properties.Settings.Default.MnistDataDirectory,
                             args.Skip(1).ToArray()
-                        );
+                            );
 
             reader.EnsureLoaded();
         }
 
-        public static MnistFilesReader ReaderFromDirectoryAndFileNamesElseConfig(string mnistSource, string[] args=null)
+        public static MnistFilesReader ReaderFromDirectoryAndFileNamesElseConfig(string mnistSource, string[] args = null, int maxImagesToRead = int.MaxValue)
         {
             MnistSource = mnistSource;
             //
@@ -33,7 +33,7 @@ namespace MnistParser
                 T10KLabelsIdx1Ubyte = Properties.Settings.Default.testLabelsFileName;
             }
 
-            return new MnistFilesReader(mnistSource, TrainImagesIdx3Ubyte, TrainLabelsIdx1Ubyte, T10KImagesIdx3Ubyte, T10KLabelsIdx1Ubyte);
+            return new MnistFilesReader(mnistSource, TrainImagesIdx3Ubyte, TrainLabelsIdx1Ubyte, T10KImagesIdx3Ubyte, T10KLabelsIdx1Ubyte, maxImagesToRead);
         }
 
         public static string MnistSource;
