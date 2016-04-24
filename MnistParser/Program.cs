@@ -1,12 +1,24 @@
-﻿namespace MnistParser
+﻿using System.Linq;
+
+namespace MnistParser
 {
     public class Program
     {
         public static void Main(params string[] args)
         {
-            MnistSource = args?.Length>0 ? args[0] : Properties.Settings.Default.MnistDataDirectory;
+            var reader = ReaderFromDirectoryAndFileNamesElseConfig(
+                            args?.Length > 0 ? args[0] : Properties.Settings.Default.MnistDataDirectory, 
+                            args.Skip(1).ToArray()
+                        );
+
+            reader.EnsureLoaded();
+        }
+
+        public static MnistFilesReader ReaderFromDirectoryAndFileNamesElseConfig(string mnistSource, string[] args=null)
+        {
+            MnistSource = mnistSource;
             //
-            if (args.Length > 4)
+            if (args!=null && args.Length >= 4)
             {
                 TrainImagesIdx3Ubyte = args[1];
                 TrainLabelsIdx1Ubyte = args[2];
@@ -21,8 +33,7 @@
                 T10KLabelsIdx1Ubyte = Properties.Settings.Default.testLabelsFileName;
             }
 
-            var reader= new MnistFilesReader(MnistSource, TrainImagesIdx3Ubyte, TrainLabelsIdx1Ubyte, T10KImagesIdx3Ubyte, T10KLabelsIdx1Ubyte);
-            reader.Load();
+            return new MnistFilesReader(mnistSource, TrainImagesIdx3Ubyte, TrainLabelsIdx1Ubyte, T10KImagesIdx3Ubyte, T10KLabelsIdx1Ubyte);
         }
 
         public static string MnistSource;

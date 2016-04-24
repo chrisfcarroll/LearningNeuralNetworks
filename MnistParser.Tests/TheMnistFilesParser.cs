@@ -9,11 +9,12 @@ namespace MnistParser.Tests
         public class GivenADataDirectoryWithFourFiles
         {
             static string mnistRealDataDirectory = @"..\..\..\MnistParser\MnistData";
+            static MnistFilesReader reader;
 
             [Test]
             public void UsesFourDefaultFileNames__GivenADataDirectory()
             {
-                Program.Main(mnistRealDataDirectory);
+                Program.ReaderFromDirectoryAndFileNamesElseConfig(mnistRealDataDirectory);
                 //
                 Program.MnistSource.ShouldBe(mnistRealDataDirectory);
                 Program.TrainImagesIdx3Ubyte.ShouldNotBeEmpty();
@@ -25,9 +26,24 @@ namespace MnistParser.Tests
             [Test]
             public void ParsesTrainingLabelFile()
             {
-                var reader = new MnistFilesReader(mnistRealDataDirectory).Load();
+                SetUpLoadedReader();
                 //
                 reader.TrainingLabels.ShouldNotBeEmpty();
+            }
+
+            [Test]
+            public void ParsesTrainingImageFile()
+            {
+                SetUpLoadedReader();
+                //
+                reader.TrainingImages.ShouldNotBeEmpty();
+            }
+
+            void SetUpLoadedReader()
+            {
+                reader= (reader !=null && reader.IsLoaded) 
+                            ? reader 
+                            : new MnistFilesReader(mnistRealDataDirectory).EnsureLoaded();
             }
         }
     }
