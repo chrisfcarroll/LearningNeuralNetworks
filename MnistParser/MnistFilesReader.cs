@@ -16,6 +16,8 @@ namespace MnistParser
         public bool IsLoaded { get; private set; }
         public Image[] TrainingImages { get; private set; }
         public byte[] TrainingLabels { get; private set; }
+        public Image[] TestImages { get; private set; }
+        public byte[] TestLabels { get; private set; }
 
         readonly string dataDirectory;
         readonly string trainingImagesFileName;
@@ -54,23 +56,24 @@ namespace MnistParser
 
         internal MnistFilesReader EnsureLoaded()
         {
-            if (IsLoaded){return this;}
-            //
-            Task.WaitAll(
-                Task.Run(async () => { TrainingLabels = await ParseTrainingLabelsFileAsync(); }),
-                Task.Run(async () => { TrainingImages = await ParseTrainingImagesFileAsync(); })
-                );
-            IsLoaded = true;
-            //TrainingLabels = ParseTrainingLabelsFileAsync().Result;
-            //TrainingImages = ParseTrainingImagesFileAsync().Result;
+            if (!IsLoaded)
+            {
+                Task.WaitAll(
+                    Task.Run(async () => { TrainingLabels = await ParseLabelsFileAsync(trainingLabelsFileName); }),
+                    Task.Run(async () => { TrainingImages = await ParseImagesFileAsync(trainingImagesFileName); }),
+                    Task.Run(async () => { TestLabels = await ParseLabelsFileAsync(testLabelsFileName); }),
+                    Task.Run(async () => { TestImages = await ParseImagesFileAsync(testImagesFileName); })
+                    );
+                IsLoaded = true;
+            }
             return this;
         }
 
 
-        async Task<Image[]> ParseTrainingImagesFileAsync()
+        async Task<Image[]> ParseImagesFileAsync(string imagesFileName)
         {
             byte[] buffer1 = new byte[4];
-            using (var fileStream = new FileStream(Path.Combine(dataDirectory, trainingImagesFileName), FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync: true))
+            using (var fileStream = new FileStream(Path.Combine(dataDirectory, imagesFileName), FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync: true))
             using (var stream = new BufferedStream(fileStream))
             {
                 stream.Read(buffer1, 0, 4); var magicNumber = buffer1[2] * 0x100 + buffer1[3];
@@ -78,8 +81,7 @@ namespace MnistParser
                 stream.Read(buffer1, 0, 4); var ySize = buffer1[2] * 0x100 + buffer1[3];
                 stream.Read(buffer1, 0, 4); var xSize = buffer1[2] * 0x100 + buffer1[3];
                 //
-                EnsureTrainingImagesFileHeaderAsExpected(magicNumber, numOfImages, xSize, ySize);
-                //
+                EnsureImagesFileHeaderAndMagicNumber(magicNumber, numOfImages, xSize, ySize, imagesFileName);
                 var trainingImages = new Image[numOfImages];
                 var i = 0;
                 var imageBuffer = new byte[Image.ByteSize];
@@ -94,17 +96,16 @@ namespace MnistParser
             }
         }
 
-        async Task<byte[]> ParseTrainingLabelsFileAsync()
+        async Task<byte[]> ParseLabelsFileAsync(string labelsFileName)
         {
             byte[] buffer = new byte[4];
-            using (var fileStream = new FileStream(Path.Combine(dataDirectory, trainingLabelsFileName), FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync: true))
+            using (var fileStream = new FileStream(Path.Combine(dataDirectory, labelsFileName), FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync: true))
             using (var stream = new BufferedStream(fileStream))
             {
                 stream.Read(buffer, 0, 4); var magicNumber = buffer[2] * 0x100 + buffer[3];
                 stream.Read(buffer, 0, 4); var numOfLabels = buffer[2] * 0x100 + buffer[3];
                 //
-                EnsureTrainingLabelsHeaderAsExpected(magicNumber, numOfLabels);
-                //
+                EnsureLabelsFileHeaderAndMagicNumber(magicNumber, numOfLabels, labelsFileName);
                 var trainingLabels = new byte[numOfLabels];
                 var i = 0;
                 while (await stream.ReadAsync(buffer, 0, 1) > 0 && i < MaximumImagesToRead)
@@ -118,16 +119,16 @@ namespace MnistParser
         }
 
 
-        void EnsureTrainingLabelsHeaderAsExpected(int magicNumber, int numOfLabels)
+        void EnsureLabelsFileHeaderAndMagicNumber(int magicNumber, int numOfLabels, string fileName)
         {
-            Debug.Assert(magicNumber == 0x00000801, trainingLabelsFileName + " didn't start with the magic number 0x00000801 so it can't be an Mnist training label file");
-            Debug.Assert(numOfLabels > 0,  trainingLabelsFileName + " claimed to label " + numOfLabels + " images, but I expected more than zero");
+            Debug.Assert(magicNumber == 0x00000801, fileName + " didn't start with the magic number 0x00000801 so it can't be an Mnist training label file");
+            Debug.Assert(numOfLabels > 0,  fileName + " claimed to label " + numOfLabels + " images, but I expected more than zero");
         }
 
-        void EnsureTrainingImagesFileHeaderAsExpected(int magicNumber, int numOfImages, int xSize, int ySize)
+        void EnsureImagesFileHeaderAndMagicNumber(int magicNumber, int numOfImages, int xSize, int ySize, string fileName)
         {
-            Debug.Assert(magicNumber == 0x00000803, trainingImagesFileName + " didn't start with the magic number 0x00000803 so it can't be an Mnist training images file");
-            Debug.Assert(numOfImages > 0, trainingImagesFileName + " claimed to be " + numOfImages + " images, but I expected more than zero");
+            Debug.Assert(magicNumber == 0x00000803, fileName + " didn't start with the magic number 0x00000803 so it can't be an Mnist training images file");
+            Debug.Assert(numOfImages > 0, fileName + " claimed to be " + numOfImages + " images, but I expected more than zero");
             Debug.Assert(xSize == 28 && ySize == 28, "Expected image sizes 28x28, but got " + xSize + "x" + ySize);
         }
     }

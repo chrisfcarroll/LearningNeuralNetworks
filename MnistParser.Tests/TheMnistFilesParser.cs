@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Linq;
+using NUnit.Framework;
 using TestBase.Shoulds;
 
 namespace MnistParser.Tests
@@ -24,7 +25,7 @@ namespace MnistParser.Tests
             }
 
             [Test]
-            public void ParsesTrainingLabelFile()
+            public void ParsesAndExposesTrainingLabelFile()
             {
                 SetUpLoadedReader();
                 //
@@ -32,12 +33,29 @@ namespace MnistParser.Tests
             }
 
             [Test]
-            public void ParsesTrainingImageFile()
+            public void ParsesAndExposesTrainingImageFile()
             {
                 SetUpLoadedReader();
                 //
-                reader.TrainingImages.ShouldNotBeEmpty();
+                reader.TrainingImages.ShouldNotBeEmpty().First().Data.ShouldNotBeEmpty();
             }
+
+            [Test]
+            public void ParsesAndExposesTestLabelFile()
+            {
+                SetUpLoadedReader();
+                //
+                reader.TestLabels.ShouldNotBeEmpty();
+            }
+
+            [Test]
+            public void ParsesAndExposesTestImageFile()
+            {
+                SetUpLoadedReader();
+                //
+                reader.TestImages.ShouldNotBeEmpty().First().Data.ShouldNotBeEmpty();
+            }
+
 
             void SetUpLoadedReader()
             {
