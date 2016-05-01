@@ -13,9 +13,26 @@ namespace LearningNeuralNetworks
                 : inputs.Sum(i => i.Source.FiringRate * i.weight);
         }
 
-        public static ZeroToOne Sigmoid(this double input)
+        public static double Sigmoid(this double input)
         {
-            return new ZeroToOne(1d / (1d + Math.Exp(-input)));
+            return 1d / (1d + Math.Exp(-input));
+        }
+
+        public static double SigmoidDerivative(this double input)
+        {
+            var sigmoid = Sigmoid(input);
+            return  sigmoid * (1 - sigmoid);
+        }
+
+        public static double Sigmoid(this ZeroToOne input)
+        {
+            return 1d / (1d + Math.Exp(-input));
+        }
+
+        public static double SigmoidDerivative(this ZeroToOne input)
+        {
+            var sigmoid = Sigmoid(input);
+            return sigmoid * (1 - sigmoid);
         }
     }
 }

@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace MnistParser
@@ -18,6 +21,8 @@ namespace MnistParser
         public byte[] TrainingLabels { get; private set; }
         public Image[] TestImages { get; private set; }
         public byte[] TestLabels { get; private set; }
+        public IEnumerable<MNistPair> TrainingData { get { return TrainingImages.Select( (img,i) => new MNistPair(img, TrainingLabels[i]));} }
+        public IEnumerable<MNistPair> TestData { get { return TestImages.Select((img, i) => new MNistPair(img, TestLabels[i])); } }
 
         readonly string dataDirectory;
         readonly string trainingImagesFileName;
@@ -25,7 +30,7 @@ namespace MnistParser
         readonly string testImagesFileName;
         readonly string testLabelsFileName;
         /// <param name="mnistDataDirectory">The directory in which to find the four Mnist files</param>
-        public MnistFilesReader(string mnistDataDirectory, string trainingImagesFileName, string trainingLabelsFileName, string testImagesFileName, string testLabelsFileName, int maximumImagesToRead=int.MaxValue)
+        public MnistFilesReader(string mnistDataDirectory, string trainingImagesFileName, string trainingLabelsFileName, string testImagesFileName, string testLabelsFileName, int maximumImagesToRead=int.MaxValue, bool loadImmediately=true)
         {
             MaximumImagesToRead = maximumImagesToRead;
             this.dataDirectory = mnistDataDirectory;
@@ -34,15 +39,18 @@ namespace MnistParser
             this.testImagesFileName = testImagesFileName;
             this.testLabelsFileName = testLabelsFileName;
             MaximumImagesToRead = maximumImagesToRead;
+            //
+            if (loadImmediately) { EnsureLoaded();}
         }
         /// <param name="mnistDataDirectory">The directory in which to find the four Mnist files</param>
-        public MnistFilesReader(string mnistDataDirectory = null) 
+        public MnistFilesReader(string mnistDataDirectory = null, bool loadImmediately=true) 
             : this(
                   mnistDataDirectory ?? Properties.Settings.Default.MnistDataDirectory,
                   Properties.Settings.Default.trainImagesFileName,
                   Properties.Settings.Default.trainLabelsFileName,
                   Properties.Settings.Default.testImagesFileName,
-                  Properties.Settings.Default.testLabelsFileName
+                  Properties.Settings.Default.testLabelsFileName,
+                  loadImmediately:loadImmediately
                   ){}
 
         public MnistFilesReader(string mnistRealDataDirectory, int maximumImagesToRead) 
@@ -133,31 +141,14 @@ namespace MnistParser
         }
     }
 
-    public class Image
+    public struct MNistPair
     {
-        public const int ByteSizeX = 28;
-        public const int ByteSizeY = 28;
-        public const int ByteSize = ByteSizeX * ByteSizeY;
+        public Image Image  { get; }
+        public byte Label { get; }
 
-        public byte[,] Data { get; private set; }
+        /// <summary>Initializes a new instance of the <see cref="MNistPair"/> structure with the specified data and label.</summary>
+        public MNistPair(Image image, byte label) { Image = image; Label = label; }
 
-        public Image(byte[,] imageData28x28pixels)
-        {
-            Contract.Requires(imageData28x28pixels.GetLength(0)==ByteSizeX );
-            Contract.Requires(imageData28x28pixels.GetLength(1) == ByteSizeY);
-            //
-            Data = imageData28x28pixels;
-        }
-        public Image(byte[] imageData28x28pixels)
-        {
-            Contract.Requires(imageData28x28pixels.Length == ByteSize);
-            Data= new byte[ByteSizeX,ByteSizeY];
-            for (int i = 0; i < ByteSizeX; i++)
-            for (int j = 0; j < ByteSizeX; j++)
-            {
-                Data[i, j] = imageData28x28pixels[i*ByteSizeX + j];
-            }
-        }
-
+        public override string ToString() { return "<" + Image + "," + Label + ">"; }
     }
 }

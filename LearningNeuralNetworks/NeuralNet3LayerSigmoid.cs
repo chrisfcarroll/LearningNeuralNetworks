@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using MnistParser;
 
 namespace LearningNeuralNetworks
 {
@@ -71,6 +73,17 @@ namespace LearningNeuralNetworks
             return this;
 
         }
+        public NeuralNet3LayerSigmoid DeltaInputToHiddenWeights(double[,] inputToHiddenWeights)
+        {
+            for (int i = 0; i < InputToHidden.RowCount; i++)
+            for (int j = 0; j < InputToHidden.ColumnCount; j++)
+            {
+                InputToHidden[i, j] += inputToHiddenWeights[i, j];
+            }
+            return this;
+
+        }
+
         public NeuralNet3LayerSigmoid SetHiddenToOutputWeights(double[,] hiddenToOutputWeights)
         {
             for (int i = 0; i < HiddenToOutput.RowCount; i++)
@@ -81,13 +94,54 @@ namespace LearningNeuralNetworks
             return this;
         }
 
+        public NeuralNet3LayerSigmoid DeltaHiddenToOutputWeights(double[,] hiddenToOutputWeights)
+        {
+            for (int i = 0; i < HiddenToOutput.RowCount; i++)
+            for (int j = 0; j < HiddenToOutput.ColumnCount; j++)
+            {
+                HiddenToOutput[i, j] += hiddenToOutputWeights[i, j];
+            }
+            return this;
+        }
+
+        public NeuralNet3LayerSigmoid ActivateInputs(double[] inputs)
+        {
+            for (int i = 0; i < InputLayer.Length; i++)
+            {
+                InputLayer[i].Inputs = new[] { new Sinput(SigmoidNeuronBuilder.FixedSensorOn(), inputs[i]) };
+            }
+            return this;
+        }
+        public NeuralNet3LayerSigmoid ActivateInputs(int[] inputs)
+        {
+            for (int i = 0; i < InputLayer.Length; i++)
+            {
+                InputLayer[i].Inputs = new[] { new Sinput(SigmoidNeuronBuilder.FixedSensorOn(), inputs[i]) };
+            }
+            return this;
+        }
+        public NeuralNet3LayerSigmoid ActivateInputs(byte[] inputs)
+        {
+            for (int i = 0; i < InputLayer.Length; i++)
+            {
+                InputLayer[i].Inputs = new[] { new Sinput(SigmoidNeuronBuilder.FixedSensorOn(), inputs[i]) };
+            }
+            return this;
+        }
+
         public IEnumerable<ZeroToOne> OutputFor(params double[] inputs)
         {
-            for(int i=0; i < InputLayer.Length; i++)
-            {
-                InputLayer[i].Inputs = new[] {new Sinput(SigmoidNeuronBuilder.FixedSensorOn(), inputs[i])};
-            }
-            return OutputLayer.Select(n => n.FiringRate);
+            return ActivateInputs(inputs).LastOutputs;
+        }
+
+        public IEnumerable<ZeroToOne> LastOutputs
+        {
+            get { return OutputLayer.Select(n => n.FiringRate); }
+        }
+
+        public T LastOutputAs<T>(Func<IEnumerable<ZeroToOne>, T> interpretationOfOutputs)
+        {
+            return interpretationOfOutputs(LastOutputs);
         }
 
         public NeuralNet3LayerSigmoid SetBiases(double[] inputLayerBiases, double[] hiddenLayerBiases, double[] outputLayerBiases)
@@ -96,6 +150,76 @@ namespace LearningNeuralNetworks
             for (int i = 0; i < HiddenLayer.Length; i++){ HiddenLayer[i].bias = hiddenLayerBiases[i]; }
             for (int i = 0; i < OutputLayer.Length; i++){ OutputLayer[i].bias = outputLayerBiases[i]; }
             return this;
+        }
+        public NeuralNet3LayerSigmoid DeltaBiases(double[] inputLayerBiases, double[] hiddenLayerBiases, double[] outputLayerBiases)
+        {
+            for (int i = 0; i < InputLayer.Length; i++) { InputLayer[i].bias += inputLayerBiases[i]; }
+            for (int i = 0; i < HiddenLayer.Length; i++) { HiddenLayer[i].bias += hiddenLayerBiases[i]; }
+            for (int i = 0; i < OutputLayer.Length; i++) { OutputLayer[i].bias += outputLayerBiases[i]; }
+            return this;
+        }
+
+
+        public NeuralNet3LayerSigmoid LearnWithGradientDescentStochasticallyFrom(IEnumerable<MNistPair> trainingData, int epochs, int batchSize, double trainingRateEta)
+        {
+            var rand= new Random();
+            var shuffledTrainingData = trainingData.OrderBy(e => rand.Next()).ToArray();
+            //
+            for (int e = 0; e < epochs; e++)
+            for (int batchNo= 0; batchNo *batchSize < shuffledTrainingData.Length; batchNo++)
+            {
+                LearnWithGradientDescent(shuffledTrainingData.Skip(batchNo*batchSize).Take(batchSize), trainingRateEta);
+            }
+            return this;
+        }
+
+        NeuralNet3LayerSigmoid LearnWithGradientDescent(IEnumerable<MNistPair> trainingData, double trainingRateEta)
+        {
+            var nabla_biases = new double[][]{InputLayer.Select(x => x.bias).ToArray(), HiddenLayer.Select(x => x.bias).ToArray(), OutputLayer.Select(x => x.bias).ToArray()};
+            object nabla_weights;
+            //
+            foreach (var pair in trainingData)
+            {
+                DeltaNablaForNet deltaNablaForNet = BackPropagate(pair);
+                DeltaBiases(deltaNablaForNet.Biases.InputBiases, deltaNablaForNet.Biases.HiddenBiases, deltaNablaForNet.Biases.OutputBiases );
+                DeltaInputToHiddenWeights(deltaNablaForNet.Weights.InputToHidden);
+                DeltaHiddenToOutputWeights(deltaNablaForNet.Weights.HiddenToOutput);
+            }
+
+
+            return this;
+        }
+
+        DeltaNablaForNet BackPropagate(MNistPair pair)
+        {
+            var result= new DeltaNablaForNet();
+            var activation = pair.Image.As1D;
+            var activations = new List<Image> {pair.Image};
+
+            //forward pass
+            ActivateInputs(activation);
+            //backward pass;
+            var delta = LastOutputs.Select(x => (x - pair.Label) * x.SigmoidDerivative());
+
+            return result;
+        }
+
+        class DeltaNablaForNet
+        {
+            public LayerBiases Biases= new LayerBiases();
+            public Weights Weights= new Weights();
+        }
+
+        class Weights
+        {
+            public double[,] InputToHidden;
+            public double[,] HiddenToOutput;
+        }
+        class LayerBiases
+        {
+            public double[] InputBiases;
+            public double[] HiddenBiases;
+            public double[] OutputBiases;
         }
     }
 }
