@@ -62,6 +62,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="NeuralNetworks.cs" />
     <Compile Include="TheMnistLearner1Builder.cs" />
     <Compile Include="SigmoidNeurons.cs" />
     <Compile Include="Perceptrons.cs" />

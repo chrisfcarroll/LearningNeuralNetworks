@@ -45,7 +45,7 @@ namespace LearningNeuralNetworks
 	  	///<returns>True if and only if this value > 0.5d</returns>
       	public bool AsBool => value > 0.5d;
 
-      public static implicit operator double(ZeroToOne input) { return input.value;}
+        public static implicit operator double(ZeroToOne input) { return input.value;}
         public static implicit operator ZeroToOne(double input) { return new ZeroToOne(input);}
         public static implicit operator bool(ZeroToOne input) { return input.AsBool;}
         public static implicit operator ZeroToOne(bool input) { return new ZeroToOne(input?1:0);}

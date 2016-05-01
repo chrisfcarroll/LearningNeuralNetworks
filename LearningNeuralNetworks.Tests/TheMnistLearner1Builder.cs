@@ -14,9 +14,10 @@ namespace LearningNeuralNetworks.Tests
         [Test]
         public void BuildsANetworkWith784InputNeurons()
         {
-            MnistSigmoidLearner1Builder.Build()
-                .InputLayer
-                .Length.ShouldBe(MnistParser.Image.ByteSize);
+            var net= MnistSigmoidLearner1NetBuilder.Build(15);
+            net.InputLayer.Length.ShouldBe(MnistParser.Image.ByteSize);
+            net.HiddenLayer.Length.ShouldBe(15);
+            net.OutputLayer.Length.ShouldBe(10);
         }
     }
 }
