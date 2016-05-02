@@ -5,19 +5,69 @@ using MnistParser;
 
 namespace LearningNeuralNetworks
 {
-    public class LearningAlgorithm
+    public class LearningAlgorithm<T>
     {
-        public virtual LearningAlgorithm Apply(NeuralNet3LayerSigmoid net, IEnumerable<MNistPair> trainingData, double trainingRateEta)
+        public virtual LearningAlgorithm<T> Apply(InterpretedNet<T> net, IEnumerable<MNistPair> trainingData, double trainingRateEta)
         {
             return this;
         }
     }
 
-    public class StochasticGradientDescent : LearningAlgorithm
+    /// <summary>
+    /// A bit like random walk, but trying to walk downhill.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class RandomFall<T> : LearningAlgorithm<T>
+    {
+        public int Iterations { get;}
+
+        public override LearningAlgorithm<T> Apply(InterpretedNet<T> net, IEnumerable<MNistPair> trainingData, double trainingRateEta)
+        {
+            foreach (var pair in trainingData)
+            {
+                var bestSoFar = net.OutputFor(pair.Image.As1Ddoubles);
+                if (!bestSoFar.Equals(pair.Label))
+                {
+                    var rnd = new Random();
+                    Func<double, double> randomize = input => input*(rnd.Next(10) - 5)*rnd.NextDouble();
+                    for (int e = 0; e < Iterations; e++)
+                    {
+                        var deltaInputToHidden = net.Net.InputToHidden.Clone();
+                        for (int i = 0; i < deltaInputToHidden.RowCount; i++)
+                            for (int j = 0; j < deltaInputToHidden.ColumnCount; j++)
+                            {
+                                deltaInputToHidden[i, j] = randomize(deltaInputToHidden[i, j]);
+                            }
+                        var deltaHiddenToOutput = net.Net.HiddenToOutput.Clone();
+                        for (int i = 0; i < deltaHiddenToOutput.RowCount; i++)
+                            for (int j = 0; j < deltaHiddenToOutput.ColumnCount; j++)
+                            {
+                                deltaHiddenToOutput[i, j] = randomize(deltaHiddenToOutput[i, j]);
+                            }
+                        var deltaInputBiases = net.Net.InputLayer.Select(n => randomize(n.bias));
+                        var deltaHiddenBiases = net.Net.HiddenLayer.Select(n => randomize(n.bias));
+                        var deltaOutputBiases = net.Net.OutputLayer.Select(n => randomize(n.bias));
+                        //
+                        net.Net.DeltaInputToHiddenWeights(deltaInputToHidden);
+                        net.Net.DeltaHiddenToOutputWeights(deltaHiddenToOutput);
+                        net.Net.DeltaBiases(deltaInputBiases, deltaHiddenBiases, deltaOutputBiases);
+
+                        var newResult = net.OutputFor(pair.Image.As1Ddoubles);
+                    }
+                }
+            }
+            return this;
+        }
+
+        public RandomFall(int iterations) { Iterations = iterations; }
+        public RandomFall() { Iterations = 2; }
+    }
+
+    public class StochasticGradientDescent<T> : LearningAlgorithm<T>
     {
         readonly int epochs;
         readonly int batchSize;
-        readonly GradientDescent gradientDescent= new GradientDescent();
+        readonly GradientDescent<T> gradientDescent= new GradientDescent<T>();
 
         public StochasticGradientDescent(int epochs, int batchSize)
         {
@@ -25,7 +75,7 @@ namespace LearningNeuralNetworks
             this.batchSize = batchSize;
         }
 
-        public override LearningAlgorithm Apply(NeuralNet3LayerSigmoid net, IEnumerable<MNistPair> trainingData, double trainingRateEta)
+        public override LearningAlgorithm<T> Apply(InterpretedNet<T> net, IEnumerable<MNistPair> trainingData, double trainingRateEta)
         {
             var rand = new Random();
             var shuffledTrainingData = trainingData.OrderBy(e => rand.Next()).ToArray();
@@ -38,33 +88,33 @@ namespace LearningNeuralNetworks
             return this;
         }
     }
-    public class GradientDescent : LearningAlgorithm
+    public class GradientDescent<T> : LearningAlgorithm<T>
     {
-        public override LearningAlgorithm Apply(NeuralNet3LayerSigmoid net, IEnumerable<MNistPair> trainingData, double trainingRateEta)
+        public override LearningAlgorithm<T> Apply(InterpretedNet<T> net, IEnumerable<MNistPair> trainingData, double trainingRateEta)
         {
-            var nabla_biases = new double[][] { net.InputLayer.Select(x => x.bias).ToArray(), net.HiddenLayer.Select(x => x.bias).ToArray(), net.OutputLayer.Select(x => x.bias).ToArray() };
+            var nabla_biases = new double[][] { net.Net.InputLayer.Select(x => x.bias).ToArray(), net.Net.HiddenLayer.Select(x => x.bias).ToArray(), net.Net.OutputLayer.Select(x => x.bias).ToArray() };
             object nabla_weights;
             //
             foreach (var pair in trainingData)
             {
                 DeltaNablaForNet deltaNablaForNet = BackPropagate(net,pair);
-                net.DeltaBiases(deltaNablaForNet.Biases.InputBiases, deltaNablaForNet.Biases.HiddenBiases, deltaNablaForNet.Biases.OutputBiases);
-                net.DeltaInputToHiddenWeights(deltaNablaForNet.Weights.InputToHidden);
-                net.DeltaHiddenToOutputWeights(deltaNablaForNet.Weights.HiddenToOutput);
+                net.Net.DeltaBiases(deltaNablaForNet.Biases.InputBiases, deltaNablaForNet.Biases.HiddenBiases, deltaNablaForNet.Biases.OutputBiases);
+                net.Net.DeltaInputToHiddenWeights(deltaNablaForNet.Weights.InputToHidden);
+                net.Net.DeltaHiddenToOutputWeights(deltaNablaForNet.Weights.HiddenToOutput);
             }
             return this;
         }
 
-        DeltaNablaForNet BackPropagate(NeuralNet3LayerSigmoid net, MNistPair pair)
+        DeltaNablaForNet BackPropagate(InterpretedNet<T> net, MNistPair pair)
         {
             var result = new DeltaNablaForNet();
-            var activation = pair.Image.As1D;
+            var activation = pair.Image.As1DBytes;
             var activations = new List<Image> { pair.Image };
 
             //forward pass
-            net.ActivateInputs(activation);
+            net.Net.ActivateInputs(activation);
             //backward pass;
-            var delta = net.LastOutputs.Select(x => (x - pair.Label) * x.SigmoidDerivative());
+            var delta = net.Net.LastOutputs.Select(x => (x - pair.Label) * x.SigmoidDerivative());
 
             return result;
         }
@@ -77,8 +127,8 @@ namespace LearningNeuralNetworks
 
         class Weights
         {
-            public double[,] InputToHidden;
-            public double[,] HiddenToOutput;
+            public MatrixF InputToHidden;
+            public MatrixF HiddenToOutput;
         }
         class LayerBiases
         {

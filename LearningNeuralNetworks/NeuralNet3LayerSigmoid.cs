@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using MnistParser;
 
 namespace LearningNeuralNetworks
 {
@@ -12,11 +11,11 @@ namespace LearningNeuralNetworks
     /// </summary>
     public class NeuralNet3LayerSigmoid 
     {
-        public SigmoidNeuron[] InputLayer { get; private set; }
-        public SigmoidNeuron[] HiddenLayer { get; private set; }
-        public SigmoidNeuron[] OutputLayer { get; private set; }
-        public MatrixF InputToHidden { get; private set; }
-        public MatrixF HiddenToOutput { get; private set; }
+        public SigmoidNeuron[] InputLayer { get; }
+        public SigmoidNeuron[] HiddenLayer { get; }
+        public SigmoidNeuron[] OutputLayer { get; }
+        public MatrixF InputToHidden { get; }
+        public MatrixF HiddenToOutput { get; }
 
         /// <summary>
         /// Construct a 3 layer sigmoid neural net with all weights and biases zero.
@@ -73,7 +72,7 @@ namespace LearningNeuralNetworks
             return this;
 
         }
-        public NeuralNet3LayerSigmoid DeltaInputToHiddenWeights(double[,] inputToHiddenWeights)
+        public NeuralNet3LayerSigmoid DeltaInputToHiddenWeights(MatrixF inputToHiddenWeights)
         {
             for (int i = 0; i < InputToHidden.RowCount; i++)
             for (int j = 0; j < InputToHidden.ColumnCount; j++)
@@ -94,7 +93,7 @@ namespace LearningNeuralNetworks
             return this;
         }
 
-        public NeuralNet3LayerSigmoid DeltaHiddenToOutputWeights(double[,] hiddenToOutputWeights)
+        public NeuralNet3LayerSigmoid DeltaHiddenToOutputWeights(MatrixF hiddenToOutputWeights)
         {
             for (int i = 0; i < HiddenToOutput.RowCount; i++)
             for (int j = 0; j < HiddenToOutput.ColumnCount; j++)
@@ -106,7 +105,8 @@ namespace LearningNeuralNetworks
 
         public NeuralNet3LayerSigmoid ActivateInputs(IEnumerable<double> inputs)
         {
-            for (int i = 0; i < InputLayer.Length; i++)
+            var max = Math.Min(InputLayer.Length, inputs.Count());
+            for (int i = 0; i < max; i++)
             {
                 InputLayer[i].Inputs = new[] { new Sinput(SigmoidNeuronBuilder.FixedSensorOn(), inputs.Skip(i).First()) };
             }
@@ -114,7 +114,8 @@ namespace LearningNeuralNetworks
         }
         public NeuralNet3LayerSigmoid ActivateInputs(int[] inputs)
         {
-            for (int i = 0; i < InputLayer.Length; i++)
+            var max = Math.Min(InputLayer.Length, inputs.Count());
+            for (int i = 0; i < max; i++)
             {
                 InputLayer[i].Inputs = new[] { new Sinput(SigmoidNeuronBuilder.FixedSensorOn(), inputs[i]) };
             }
@@ -122,7 +123,8 @@ namespace LearningNeuralNetworks
         }
         public NeuralNet3LayerSigmoid ActivateInputs(byte[] inputs)
         {
-            for (int i = 0; i < InputLayer.Length; i++)
+            var max = Math.Min(InputLayer.Length, inputs.Count());
+            for (int i = 0; i < max; i++)
             {
                 InputLayer[i].Inputs = new[] { new Sinput(SigmoidNeuronBuilder.FixedSensorOn(), inputs[i]) };
             }
@@ -151,18 +153,13 @@ namespace LearningNeuralNetworks
             for (int i = 0; i < OutputLayer.Length; i++){ OutputLayer[i].bias = outputLayerBiases[i]; }
             return this;
         }
-        public NeuralNet3LayerSigmoid DeltaBiases(double[] inputLayerBiases, double[] hiddenLayerBiases, double[] outputLayerBiases)
+        public NeuralNet3LayerSigmoid DeltaBiases(IEnumerable<double> inputLayerBiases, IEnumerable<double> hiddenLayerBiases, IEnumerable<double> outputLayerBiases)
         {
-            for (int i = 0; i < InputLayer.Length; i++) { InputLayer[i].bias += inputLayerBiases[i]; }
-            for (int i = 0; i < HiddenLayer.Length; i++) { HiddenLayer[i].bias += hiddenLayerBiases[i]; }
-            for (int i = 0; i < OutputLayer.Length; i++) { OutputLayer[i].bias += outputLayerBiases[i]; }
+            for (int i = 0; i < InputLayer.Length; i++) { InputLayer[i].bias += inputLayerBiases.ElementAt(i); }
+            for (int i = 0; i < HiddenLayer.Length; i++) { HiddenLayer[i].bias += hiddenLayerBiases.ElementAt(i); }
+            for (int i = 0; i < OutputLayer.Length; i++) { OutputLayer[i].bias += outputLayerBiases.ElementAt(i); }
             return this;
         }
 
-        public NeuralNet3LayerSigmoid LearnFrom(IEnumerable<MNistPair> trainingData, double trainingRateEta, LearningAlgorithm algorithm)
-        {
-            algorithm.Apply(this, trainingData, trainingRateEta);
-            return this;
-        }
     }
 }

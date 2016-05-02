@@ -12,7 +12,8 @@ namespace MnistParser
         public const int ByteSize = ByteSizeX * ByteSizeY;
 
 
-        public byte[] As1D => Enumerated().ToArray();
+        public byte[]   As1DBytes => Enumerated().ToArray();
+        public double[] As1Ddoubles => Enumerated().Select(x=> (double)x).ToArray();
         public byte[,] Data { get; }
 
 

@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LearningNeuralNetworks
 {
     public static class MnistSigmoidLearner1NetBuilderTrainer
     {
-        public static NeuralNet3LayerSigmoid Build(int hiddenLayerSize)
+        public static InterpretedNet<byte> Build(int hiddenLayerSize)
         {
-            return new NeuralNet3LayerSigmoid(784, hiddenLayerSize, 10);
+            return new InterpretedNet<byte>(
+                        new NeuralNet3LayerSigmoid(784, hiddenLayerSize, 10),
+                        e=>(byte) e.ArgMaxIndex(n=>n),
+                        b => Enumerable.Range(0,10).Select(i => i==b? 1 :0).Select(i => (ZeroToOne)i),
+                        Comparer<byte>.Default
+                        ) ;
         }
     }
 

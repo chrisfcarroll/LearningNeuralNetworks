@@ -1,4 +1,6 @@
-﻿namespace LearningNeuralNetworks
+﻿using System;
+
+namespace LearningNeuralNetworks
 {
     public class MatrixL
     {
@@ -30,5 +32,7 @@
         }
 
         readonly double[,] data;
+
+        public MatrixF Clone() { return (MatrixF)MemberwiseClone(); }
     }
 }
