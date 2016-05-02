@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LearningAlgorithm.cs" />
     <Compile Include="Matrix.cs" />
     <Compile Include="MnistSigmoidLearner1NetBuilderTrainer.cs" />
     <Compile Include="NeuralNet3LayerSigmoid.cs" />

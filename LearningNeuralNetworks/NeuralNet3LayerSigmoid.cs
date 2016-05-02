@@ -104,11 +104,11 @@ namespace LearningNeuralNetworks
             return this;
         }
 
-        public NeuralNet3LayerSigmoid ActivateInputs(double[] inputs)
+        public NeuralNet3LayerSigmoid ActivateInputs(IEnumerable<double> inputs)
         {
             for (int i = 0; i < InputLayer.Length; i++)
             {
-                InputLayer[i].Inputs = new[] { new Sinput(SigmoidNeuronBuilder.FixedSensorOn(), inputs[i]) };
+                InputLayer[i].Inputs = new[] { new Sinput(SigmoidNeuronBuilder.FixedSensorOn(), inputs.Skip(i).First()) };
             }
             return this;
         }
@@ -159,67 +159,10 @@ namespace LearningNeuralNetworks
             return this;
         }
 
-
-        public NeuralNet3LayerSigmoid LearnWithGradientDescentStochasticallyFrom(IEnumerable<MNistPair> trainingData, int epochs, int batchSize, double trainingRateEta)
+        public NeuralNet3LayerSigmoid LearnFrom(IEnumerable<MNistPair> trainingData, double trainingRateEta, LearningAlgorithm algorithm)
         {
-            var rand= new Random();
-            var shuffledTrainingData = trainingData.OrderBy(e => rand.Next()).ToArray();
-            //
-            for (int e = 0; e < epochs; e++)
-            for (int batchNo= 0; batchNo *batchSize < shuffledTrainingData.Length; batchNo++)
-            {
-                LearnWithGradientDescent(shuffledTrainingData.Skip(batchNo*batchSize).Take(batchSize), trainingRateEta);
-            }
+            algorithm.Apply(this, trainingData, trainingRateEta);
             return this;
-        }
-
-        NeuralNet3LayerSigmoid LearnWithGradientDescent(IEnumerable<MNistPair> trainingData, double trainingRateEta)
-        {
-            var nabla_biases = new double[][]{InputLayer.Select(x => x.bias).ToArray(), HiddenLayer.Select(x => x.bias).ToArray(), OutputLayer.Select(x => x.bias).ToArray()};
-            object nabla_weights;
-            //
-            foreach (var pair in trainingData)
-            {
-                DeltaNablaForNet deltaNablaForNet = BackPropagate(pair);
-                DeltaBiases(deltaNablaForNet.Biases.InputBiases, deltaNablaForNet.Biases.HiddenBiases, deltaNablaForNet.Biases.OutputBiases );
-                DeltaInputToHiddenWeights(deltaNablaForNet.Weights.InputToHidden);
-                DeltaHiddenToOutputWeights(deltaNablaForNet.Weights.HiddenToOutput);
-            }
-
-
-            return this;
-        }
-
-        DeltaNablaForNet BackPropagate(MNistPair pair)
-        {
-            var result= new DeltaNablaForNet();
-            var activation = pair.Image.As1D;
-            var activations = new List<Image> {pair.Image};
-
-            //forward pass
-            ActivateInputs(activation);
-            //backward pass;
-            var delta = LastOutputs.Select(x => (x - pair.Label) * x.SigmoidDerivative());
-
-            return result;
-        }
-
-        class DeltaNablaForNet
-        {
-            public LayerBiases Biases= new LayerBiases();
-            public Weights Weights= new Weights();
-        }
-
-        class Weights
-        {
-            public double[,] InputToHidden;
-            public double[,] HiddenToOutput;
-        }
-        class LayerBiases
-        {
-            public double[] InputBiases;
-            public double[] HiddenBiases;
-            public double[] OutputBiases;
         }
     }
 }

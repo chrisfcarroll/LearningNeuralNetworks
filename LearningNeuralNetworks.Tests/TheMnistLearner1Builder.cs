@@ -23,22 +23,31 @@ namespace LearningNeuralNetworks.Tests
             net.OutputLayer.Length.ShouldBe(10);
         }
 
-        [Test]
-        public void TrainsItsNetWithStochasticGradientDescent()
+        [TestFixture]
+        public class IsTrainableAnd
         {
-            var net = MnistSigmoidLearner1NetBuilderTrainer.Build(15);
-            var trainingData = new MnistFilesReader(mnistRealDataDirectory);
-            var scoreBeforeTraining = HitsScoredOnTestData(net, trainingData.TrainingData.Take(100));
-            //
-            net.LearnWithGradientDescentStochasticallyFrom(trainingData.TrainingData, 10, 10, 0.1d);
-            //
-            var scoreAfterTraining = HitsScoredOnTestData(net, trainingData.TrainingData.Take(100));
-            scoreAfterTraining.ShouldBeGreaterThan(scoreBeforeTraining);
-        }
 
-        public int HitsScoredOnTestData(NeuralNet3LayerSigmoid net, IEnumerable<MNistPair> testData)
-        {
-            return testData.Count(d => net.OutputFor(d.Image.As1D.Select(b=>(double)b).ToArray()).ArgMaxIndex(e=>e) == d.Label);
+            [Test]
+            public void CanLearnSomehow()
+            {
+                var net = MnistSigmoidLearner1NetBuilderTrainer.Build(15);
+                var trainingData = new MnistFilesReader(mnistRealDataDirectory);
+                var scoreBeforeTraining = HitsScoredOnTestData(net, trainingData.TrainingData.Take(100));
+                //
+                net.LearnFrom(trainingData.TrainingData, 0.01, new LearningAlgorithm());
+                //
+                var scoreAfterTraining = HitsScoredOnTestData(net, trainingData.TrainingData.Take(100));
+                scoreAfterTraining.ShouldBeGreaterThan(scoreBeforeTraining);
+            }
+
+            public int HitsScoredOnTestData(NeuralNet3LayerSigmoid net, IEnumerable<MNistPair> testData)
+            {
+                return
+                    testData.Count(
+                        d =>
+                            net.ActivateInputs(d.Image.As1D.Select(b => (double) b))   
+                               .LastOutputAs(o => o.ArgMaxIndex(e => e)) == d.Label);
+            }
         }
     }
 
