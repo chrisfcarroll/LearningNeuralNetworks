@@ -21,8 +21,8 @@ namespace MnistParser
         public byte[] TrainingLabels { get; private set; }
         public Image[] TestImages { get; private set; }
         public byte[] TestLabels { get; private set; }
-        public IEnumerable<MNistPair> TrainingData { get { return TrainingImages.Select( (img,i) => new MNistPair(img, TrainingLabels[i]));} }
-        public IEnumerable<MNistPair> TestData { get { return TestImages.Select((img, i) => new MNistPair(img, TestLabels[i])); } }
+        public IEnumerable<Pair<Image,byte>> TrainingData { get { return TrainingImages.Select( (img,i) => Pair.New(img, TrainingLabels[i]));} }
+        public IEnumerable<Pair<Image,byte>> TestData { get { return TestImages.Select((img, i) => Pair.New(img, TestLabels[i])); } }
 
         readonly string dataDirectory;
         readonly string trainingImagesFileName;
@@ -139,16 +139,5 @@ namespace MnistParser
             Debug.Assert(numOfImages > 0, fileName + " claimed to be " + numOfImages + " images, but I expected more than zero");
             Debug.Assert(xSize == 28 && ySize == 28, "Expected image sizes 28x28, but got " + xSize + "x" + ySize);
         }
-    }
-
-    public struct MNistPair
-    {
-        public Image Image  { get; }
-        public byte Label { get; }
-
-        /// <summary>Initializes a new instance of the <see cref="MNistPair"/> structure with the specified data and label.</summary>
-        public MNistPair(Image image, byte label) { Image = image; Label = label; }
-
-        public override string ToString() { return "<" + Image + "," + Label + ">"; }
     }
 }

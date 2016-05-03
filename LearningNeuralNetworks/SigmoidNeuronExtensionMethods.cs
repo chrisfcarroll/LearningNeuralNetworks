@@ -34,5 +34,11 @@ namespace LearningNeuralNetworks
             var sigmoid = Sigmoid(input);
             return sigmoid * (1 - sigmoid);
         }
+
+        public static double Sqrt(this double input)
+        {
+            return Math.Sqrt(input);
+        }
+
     }
 }

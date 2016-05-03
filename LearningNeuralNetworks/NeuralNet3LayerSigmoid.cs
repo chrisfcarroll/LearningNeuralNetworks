@@ -133,12 +133,12 @@ namespace LearningNeuralNetworks
 
         public IEnumerable<ZeroToOne> OutputFor(params double[] inputs)
         {
-            return ActivateInputs(inputs).LastOutputs;
+            return ActivateInputs(inputs).LastOutputs.ToArray();
         }
 
         public IEnumerable<ZeroToOne> LastOutputs
         {
-            get { return OutputLayer.Select(n => n.FiringRate); }
+            get { return OutputLayer.Select(n => n.FiringRate).ToArray(); }
         }
 
         public T LastOutputAs<T>(Func<IEnumerable<ZeroToOne>, T> interpretationOfOutputs)

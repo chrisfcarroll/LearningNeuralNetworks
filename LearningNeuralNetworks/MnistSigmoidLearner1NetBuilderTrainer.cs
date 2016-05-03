@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MnistParser;
 
 namespace LearningNeuralNetworks
 {
     public static class MnistSigmoidLearner1NetBuilderTrainer
     {
-        public static InterpretedNet<byte> Build(int hiddenLayerSize)
+        public static InterpretedNet<Image,byte> Build(int hiddenLayerSize)
         {
-            return new InterpretedNet<byte>(
+            return new InterpretedNet<Image,byte>(
                         new NeuralNet3LayerSigmoid(784, hiddenLayerSize, 10),
+                        image => image.As1Ddoubles,
                         e=>(byte) e.ArgMaxIndex(n=>n),
                         b => Enumerable.Range(0,10).Select(i => i==b? 1 :0).Select(i => (ZeroToOne)i),
-                        Comparer<byte>.Default
+                        (l,r) => Enumerable.Range(0, 10).Select(i => Math.Abs(l.ElementAt(i) - r.ElementAt(i)))
                         ) ;
         }
     }
