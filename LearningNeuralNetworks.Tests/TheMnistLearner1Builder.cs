@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using LearningNeuralNetworks.LearningAlgorithms;
 using MnistParser;
 using NUnit.Framework;
 using TestBase.Shoulds;
@@ -64,10 +63,10 @@ namespace LearningNeuralNetworks.Tests
             public void CanLearn_ForInstanceByRandomWalkFall()
             {
                 var net = MnistSigmoidLearner1NetBuilderTrainer.Build(15);
-                var trainingData = new MnistFilesReader(mnistRealDataDirectory).TrainingData.Take(50).ToArray();
+                var trainingData = new MnistFilesReader(mnistRealDataDirectory).TrainingData.Take(200).ToArray();
                 var scoreBeforeTraining = HitsScoredOnTestData(net, trainingData);
                 //
-                net.LearnFrom(trainingData, 0.4, new RandomWalkFall());
+                net.LearnFrom(trainingData, 0.2, new RandomWalkFall());
                 //
                 var scoreAfterTraining = HitsScoredOnTestData(net, trainingData);
                 Console.WriteLine("Scores before/after training: {0} / {1}", scoreBeforeTraining, scoreAfterTraining);

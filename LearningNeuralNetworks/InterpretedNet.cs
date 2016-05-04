@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using LearningNeuralNetworks.LearningAlgorithms;
 using MnistParser;
 
 namespace LearningNeuralNetworks
@@ -9,6 +10,17 @@ namespace LearningNeuralNetworks
 
     public delegate IEnumerable<double> Distances(IEnumerable<ZeroToOne> left, IEnumerable<ZeroToOne> right);
 
+    /// <summary>
+    /// Wraps a neural net with functions to translate:
+    /// <list type="bullets">
+    /// <item>Data to input layer weights</item>
+    /// <item>Output layer weights to a Label</item>
+    /// <item>A Label back to output layer weights</item>
+    /// </list>
+    /// And, a distance function for output layer weights.
+    /// </summary>
+    /// <typeparam name="TData"></typeparam>
+    /// <typeparam name="TLabel"></typeparam>
     public class InterpretedNet<TData,TLabel>
     {
         public static Distance PythagoreanDistance = (left, right) =>  left.Select( (l,i) =>  Math.Pow(l-right.ElementAt(i), 2) ).Sum().Sqrt();
