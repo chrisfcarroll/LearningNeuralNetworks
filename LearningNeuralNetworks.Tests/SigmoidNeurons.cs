@@ -11,9 +11,9 @@ namespace LearningNeuralNetworks.Tests
         [Test]
         public void Have_bias_and_have_inputs_with_weights()
         {
-            var sigmoidNeuron = new Neuron();
+            var sigmoidNeuron = Neuron.NewSigmoid();
             //
-            sigmoidNeuron.bias.ShouldCompile();
+            sigmoidNeuron.Bias.ShouldCompile();
             sigmoidNeuron.Inputs.ShouldCompile();
         }
 
@@ -23,7 +23,7 @@ namespace LearningNeuralNetworks.Tests
         [TestCase(false, "is the binary output of", 1, 1, 1, 1)]
         public void Can_model_binary_Nand(bool expected, string descr, params double[] fixedInputSensors)
         {
-            var inputs = fixedInputSensors.Select(InputNeuronBuilder.FixedSensor);
+            var inputs = SensorNeuronBuilder.WithValues(fixedInputSensors);
             //
           	bool isOn = SigmoidNeuronBuilder.Nand(inputs).FiringRate;
             //
@@ -33,15 +33,15 @@ namespace LearningNeuralNetworks.Tests
         [Test]
         public void Can_model_binary_Or()
         {
-            SigmoidNeuronBuilder.Or(InputNeuronBuilder.FixedSensorOn(), InputNeuronBuilder.FixedSensorOff())
+            SigmoidNeuronBuilder.Or(SensorNeuronBuilder.On(), SensorNeuronBuilder.Off())
               	.FiringRate.AsBool
               	.ShouldBeTrue();
 
-            SigmoidNeuronBuilder.Or(InputNeuronBuilder.FixedSensorOff(), InputNeuronBuilder.FixedSensorOff(),InputNeuronBuilder.FixedSensorOn(), InputNeuronBuilder.FixedSensorOff())
+            SigmoidNeuronBuilder.Or(SensorNeuronBuilder.Off(), SensorNeuronBuilder.Off(),SensorNeuronBuilder.On(), SensorNeuronBuilder.Off())
               	.FiringRate.AsBool
               	.ShouldBeTrue();
 
-            SigmoidNeuronBuilder.Or(InputNeuronBuilder.FixedSensorOff(), InputNeuronBuilder.FixedSensorOff())
+            SigmoidNeuronBuilder.Or(SensorNeuronBuilder.Off(), SensorNeuronBuilder.Off())
               	.FiringRate.AsBool
               	.ShouldBeFalse();
         }

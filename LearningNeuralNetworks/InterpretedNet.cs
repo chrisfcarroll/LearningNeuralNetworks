@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using LearningNeuralNetworks.LearningAlgorithms;
+using LearningNeuralNetworks.Maths;
 
 namespace LearningNeuralNetworks
 {
@@ -23,20 +24,19 @@ namespace LearningNeuralNetworks
     public class InterpretedNet<TData,TLabel>
     {
         public static Distance PythagoreanDistance = (left, right) =>  left.Select( (l,i) =>  Math.Pow(l-right.ElementAt(i), 2) ).Sum().Sqrt();
+
         public Func<IEnumerable<ZeroToOne>, TLabel> OutputInterpretation { get; set; }
         public Func<TLabel, IEnumerable<ZeroToOne>> ReverseInterpretation { get; set; }
-        public Func<TData,double[]>  InputEncoding { get; set; }
+        public Func<TData,ZeroToOne[]>  InputEncoding { get; set; }
         public Distances Distances { get; set; }
         public Distance  Distance { get; set; }
         public NeuralNet3LayerSigmoid Net { get; }
 
         public TLabel LastOutput => Net.LastOutputAs(OutputInterpretation);
 
-        public TLabel OutputFor(double[] input)
-        {
-            Net.ActivateInputs(input);
-            return LastOutput;
-        }
+        public TLabel OutputFor(TData input) { return ActivateInputs(input).LastOutput; }
+
+        public TLabel OutputFor(ZeroToOne[] input) { Net.ActivateInputs(input); return LastOutput; }
 
         public InterpretedNet<TData, TLabel> LearnFrom(IEnumerable<Pair<TData, TLabel>> trainingData, double trainingRateEta, LearningAlgorithm algorithm)
         {
@@ -44,7 +44,7 @@ namespace LearningNeuralNetworks
             return this;
         }
 
-        public InterpretedNet(NeuralNet3LayerSigmoid net, Func<TData, double[]> inputEncoding, Func<IEnumerable<ZeroToOne>, TLabel> outputInterpretation, Func<TLabel, IEnumerable<ZeroToOne>> reverseInterpretation, Distances distancesFunction)
+        public InterpretedNet(NeuralNet3LayerSigmoid net, Func<TData, ZeroToOne[]> inputEncoding, Func<IEnumerable<ZeroToOne>, TLabel> outputInterpretation, Func<TLabel, IEnumerable<ZeroToOne>> reverseInterpretation, Distances distancesFunction)
         {
             InputEncoding = inputEncoding;
             OutputInterpretation = outputInterpretation;
@@ -54,17 +54,10 @@ namespace LearningNeuralNetworks
             Net = net;
         }
 
-        public static implicit operator NeuralNet3LayerSigmoid(InterpretedNet<TData,TLabel> interpretedNet) { return interpretedNet.Net;}
-
         public InterpretedNet<TData,TLabel> ActivateInputs(TData input)
         {
             Net.ActivateInputs(InputEncoding(input));
             return this;
-        }
-
-        public TLabel OutputFor(TData input)
-        {
-            return ActivateInputs(input).LastOutput;
         }
     }
 

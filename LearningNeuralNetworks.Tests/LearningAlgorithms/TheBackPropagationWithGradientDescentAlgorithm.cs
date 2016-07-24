@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
 using LearningNeuralNetworks.LearningAlgorithms;
+using LearningNeuralNetworks.Maths;
 using NUnit.Framework;
 using TestBase.Shoulds;
 
 namespace LearningNeuralNetworks.Tests.LearningAlgorithms
 {
-    [TestFixture]
+    [TestFixture, Ignore("WIP July 2016")]
     public class TheBackPropagationWithGradientDescentAlgorithm
     {
         [TestCase(new []{0.35d, 0.9d}, new[] {0.1d, 0.8d, 0.4d, 0.6d}, new[] { 0.3d, 0.9d }, 0.5d   )]

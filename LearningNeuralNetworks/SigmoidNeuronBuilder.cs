@@ -1,16 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
+using LearningNeuralNetworks.Maths;
 
 namespace LearningNeuralNetworks
 {
-    public static class InputNeuronBuilder
-    {
-        public static ActivationFunction Id = x => x;
-        public static Neuron FixedSensorOn() { return new Neuron { bias = 1, ActivationFunction = Id}; }
-        public static Neuron FixedSensorOff() { return new Neuron { bias = 0, ActivationFunction = Id}; }
-        public static Neuron FixedSensor(double fixedBias) { return new Neuron { bias = fixedBias, ActivationFunction = Id}; }
-    }
-
     public static class SigmoidNeuronBuilder
     {
 
@@ -19,11 +12,10 @@ namespace LearningNeuralNetworks
         public static Neuron Nand(IEnumerable<Neuron> inputs)
         {
             var num = inputs.Count();
-            var nand = new Neuron
+            var nand = new Neuron(MathExt.Sigmoid)
             {
-                bias = num * Neuron.High,
-                Inputs = inputs.Select(p => new Sinput(p, -Neuron.High)).ToArray(),
-                ActivationFunction = SigmoidNeuronExtensionMethods.Sigmoid
+                Bias = num * Neuron.High,
+                Inputs = inputs.Select(p => new Ninput(p, -Neuron.High)).ToArray()
             };
             return nand;
         }
@@ -32,11 +24,10 @@ namespace LearningNeuralNetworks
 
         public static Neuron Or(IEnumerable<Neuron> inputs)
         {
-            return new Neuron
+            return new Neuron(MathExt.Sigmoid)
             {
-                bias = 0,
-                Inputs = inputs.Select(p => new Sinput(p, Neuron.High)).ToArray(),
-                ActivationFunction = SigmoidNeuronExtensionMethods.Sigmoid
+                Bias = 0,
+                Inputs = inputs.Select(p => new Ninput(p, Neuron.High)).ToArray()
             };
         }
     }

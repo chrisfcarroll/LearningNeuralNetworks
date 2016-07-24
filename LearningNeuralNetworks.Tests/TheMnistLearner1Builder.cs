@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using LearningNeuralNetworks.Maths;
 using MnistParser;
 using NUnit.Framework;
 using TestBase.Shoulds;
@@ -12,7 +13,7 @@ namespace LearningNeuralNetworks.Tests
         [Test]
         public void BuildsANetworkWith784InputNeurons10OutputNeuronsAndTheRequestedHiddenLayerSize()
         {
-            var net= MnistSigmoidLearner1NetBuilderTrainer.Build(15);
+            var net= MnistLearnerSigmoidNetBuilder.Build(15);
             net.Net.InputLayer.Length.ShouldBe(Image.ByteSize);
             net.Net.HiddenLayer.Length.ShouldBe(15);
             net.Net.OutputLayer.Length.ShouldBe(10);
@@ -21,8 +22,8 @@ namespace LearningNeuralNetworks.Tests
         [Test]
         public void BuildsANetworkWithInterpretationOfOutputLayerAsADigit()
         {
-            var net = MnistSigmoidLearner1NetBuilderTrainer.Build(15);
-            net.OutputFor(new[] {1d}).ShouldBeOfType<byte>();
+            var net = MnistLearnerSigmoidNetBuilder.Build(15);
+            net.OutputFor(new[] { (ZeroToOne)1d}).ShouldBeOfType<byte>();
             //
             var digitsAsOutputNeurons =
                 Enumerable.Range(0, 10)
@@ -38,7 +39,7 @@ namespace LearningNeuralNetworks.Tests
         [Test]
         public void BuildsANetworkWithReverseInterpretationBeingTheInverseOfTheInterpretation()
         {
-            var net = MnistSigmoidLearner1NetBuilderTrainer.Build(15);
+            var net = MnistLearnerSigmoidNetBuilder.Build(15);
             //
             var digitsAsOutputNeurons =
                 Enumerable.Range(0, 10)
@@ -73,7 +74,7 @@ namespace LearningNeuralNetworks.Tests
             return
                 testData.Count(
                     d =>
-                        net.ActivateInputs(d.Data.As1Ddoubles)   
+                        net.ActivateInputs(d.Data.As1Ddoubles.ToZeroToOnes())   
                             .LastOutputAs(o => o.ArgMaxIndex(e => e)) == d.Label);
         }
     }

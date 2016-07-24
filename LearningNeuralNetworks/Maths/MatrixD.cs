@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
-namespace LearningNeuralNetworks
+namespace LearningNeuralNetworks.Maths
 {
     /// <summary>A Matrix of System.Double</summary>
     public class MatrixD : IEquatable<MatrixD>

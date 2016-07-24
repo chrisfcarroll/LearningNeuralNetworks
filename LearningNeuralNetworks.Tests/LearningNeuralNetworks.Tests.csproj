@@ -63,7 +63,8 @@
   </Choose>
   <ItemGroup>
     <Compile Include="LearningAlgorithms\TheBackPropagationWithGradientDescentAlgorithm.cs" />
-    <Compile Include="NeuralNetworksWith3LayersAndSigmoidActivation.cs" />
+    <Compile Include="NeuralNet3LayerSigmoids_Constructors.cs" />
+    <Compile Include="NeuralNet3LayerSigmoids.cs" />
     <Compile Include="TheMnistLearner1Builder.cs" />
     <Compile Include="SigmoidNeurons.cs" />
     <Compile Include="Perceptrons.cs" />
