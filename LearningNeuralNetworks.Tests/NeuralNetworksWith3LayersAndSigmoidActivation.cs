@@ -63,27 +63,28 @@ namespace LearningNeuralNetworks.Tests
                 net.OutputFor(inputs).ToArray().ShouldBe(new ZeroToOne[] { 0,0,0 });
             }
 
-            [TestCase(new[] { 0.35d, 0.9d }, new[] { 0.1d, 0.8d, 0.4d, 0.6d }, new[] { 0.3d, 0.9d })]
+            [TestCase(new[] { 0.35d, 0.9d }, new[] { 0.1d, 0.4d, 0.8d, 0.6d }, new[] { 0.3d, 0.9d })]
             public void ConstructsExpectedNetworkFromFlatArrays(double[] inputs, double[] inputToHidden, double[] hiddenToOutput)
             {
                 var net = NeuralNet3LayerSigmoid.FromFlatWeightArrays(2, inputToHidden, hiddenToOutput);
                 net.InputToHidden[0, 0].ShouldBe(0.1d);
-                net.InputToHidden[0, 1].ShouldBe(0.8d);
-                net.InputToHidden[1, 0].ShouldBe(0.4d);
+                net.InputToHidden[0, 1].ShouldBe(0.4d);
+                net.InputToHidden[1, 0].ShouldBe(0.8d);
                 net.InputToHidden[1, 1].ShouldBe(0.6d);
                 net.HiddenToOutput.ShouldEqualByValue( new MatrixD(new[,] { { 0.3d }, { 0.9d } }), "HiddenToOutput");
-                net.OutputFor(inputs).ShouldBe(new ZeroToOne[] {0.69d}, $"Output For {string.Join(",",inputs)}");
             }
 
-            [TestCase(new[] { 0.35d, 0.9d }, new[] { 0.1d, 0.8d, 0.4d, 0.6d }, new[] { 0.3d, 0.9d }, 0.69d)]
-            public void Given__a221NetworkWithExampleWeights_HasExpectedFiringRatesAndOutput(double[] inputs, double[] inputToHidden, double[] hiddenToOutput, double target)
+            [TestCase(new[] { 0.35d, 0.9d }, new[] { 0.1d, 0.4d, 0.8d, 0.6d }, new[] { 0.3d, 0.9d })]
+            public void Given__a221NetworkWithExampleWeights_HasExpectedFiringRatesAndOutput(double[] inputs, double[] inputToHidden, double[] hiddenToOutput)
             {
                 var net = NeuralNet3LayerSigmoid.FromFlatWeightArrays(2, inputToHidden, hiddenToOutput);
+                var expectedOutput = 0.690283492907644d;
+                //
                 net.ActivateInputs(inputs);
-                net.HiddenLayer[0].FiringRate.ShouldBe( (ZeroToOne)0.68d, "Hidden 0 Firing Rate");
-                net.HiddenLayer[1].FiringRate.ShouldBe( (ZeroToOne)0.6637d, "Hidden 1 Firing Rate");
-                net.OutputLayer[0].FiringRate.ShouldBe( (ZeroToOne) target, "Output 0 Firing Rate");
-                net.OutputFor(inputs).ShouldBe( new ZeroToOne[] { target} );
+                net.HiddenLayer[0].FiringRate.ShouldBe( (ZeroToOne)0.680267196698649d, "Hidden 0 Firing Rate");
+                net.HiddenLayer[1].FiringRate.ShouldBe( (ZeroToOne)0.663738697404353d, "Hidden 1 Firing Rate");
+                net.OutputLayer[0].FiringRate.ShouldBe( (ZeroToOne)expectedOutput, "Output 0 Firing Rate");
+                net.OutputFor(inputs).ShouldBe( new ZeroToOne[] { expectedOutput} );
             }
 
         }

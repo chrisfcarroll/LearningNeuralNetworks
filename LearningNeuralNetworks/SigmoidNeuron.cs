@@ -8,7 +8,7 @@ namespace LearningNeuralNetworks
     /// <summary>
     /// Models a Sigmoid Neuron, see e.g. <see href="http://neuralnetworksanddeeplearning.com/chap1.html#sigmoid_neurons">this introduction</see>.
     /// </summary>
-    public struct Neuron
+    public class Neuron
     {
         public const double High = 1e100d;
         public const double Off = 0d;
@@ -25,13 +25,13 @@ namespace LearningNeuralNetworks
         public static Neuron[] NewSigmoidArray(int layerSize)
         {
             var result = new Neuron[layerSize];
-            for(int i=0; i<layerSize; i++){ result[i].ActivationFunction = SigmoidNeuronExtensionMethods.Sigmoid; }
+            for(int i=0; i<layerSize; i++){ result[i] = new Neuron {ActivationFunction = SigmoidNeuronExtensionMethods.Sigmoid}; }
             return result;
         }
         public static Neuron[] NewSensorArray(int layerSize)
         {
             var result = new Neuron[layerSize];
-            for (int i = 0; i < layerSize; i++) { result[i].ActivationFunction = x=>x; }
+            for (int i = 0; i < layerSize; i++) { result[i]= new Neuron {ActivationFunction = x=>x}; }
             return result;
         }
     }
@@ -54,9 +54,11 @@ namespace LearningNeuralNetworks
 	/// <summary>
 	/// Models a double value in the range 0 &lt;= value &lt;= 1
 	/// </summary>
-  	public struct ZeroToOne
-    {
-        readonly double value;
+  	public struct ZeroToOne : IEquatable<ZeroToOne>
+	{
+        /// <summary>Two values which differ by less than this will be considered equal by <see cref="Equals(LearningNeuralNetworks.ZeroToOne)"/></summary>
+	    public const double Epsilon = 1e-15;
+	    readonly double value;
 
         public ZeroToOne(double input)
         {
@@ -74,6 +76,23 @@ namespace LearningNeuralNetworks
         public static implicit operator bool(ZeroToOne input) { return input.AsBool;}
         public static implicit operator ZeroToOne(bool input) { return new ZeroToOne(input?1:0);}
 
-        public override string ToString() { return value.ToString(); }
+        /// <summary>
+        /// Returns <see cref="bool.True"/> iff the values differ by less than <see cref="Epsilon"/>
+        /// </summary>
+        public bool Equals(ZeroToOne other) { return Math.Abs(value - other.value) < Epsilon; }
+
+	    public override bool Equals(object obj) 
+	    {
+	        if (ReferenceEquals(null, obj)) return false;
+	        return obj is ZeroToOne && Equals((ZeroToOne) obj);
+	    }
+
+	    public override int GetHashCode() { return value.GetHashCode(); }
+
+	    public static bool operator ==(ZeroToOne left, ZeroToOne right) { return left.Equals(right); }
+
+	    public static bool operator !=(ZeroToOne left, ZeroToOne right) { return !left.Equals(right); }
+
+	    public override string ToString() { return value.ToString(); }
     }
 }
