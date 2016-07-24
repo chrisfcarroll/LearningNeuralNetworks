@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace MnistParser
+namespace LearningNeuralNetworks
 {
     public static class Pair
     {

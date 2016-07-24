@@ -45,22 +45,21 @@ namespace LearningNeuralNetworks.LearningAlgorithms
                             if (rnd.NextDouble() < trainingRateEta)
                                 deltaHiddenToOutput[i, j] = Randomize(deltaHiddenToOutput[i, j]);
                         }
-                    var deltaInputBiases = net.Net.InputLayer.Select(n => Randomize(n.bias));
                     var deltaHiddenBiases = net.Net.HiddenLayer.Select(n => Randomize(n.bias));
                     var deltaOutputBiases = net.Net.OutputLayer.Select(n => Randomize(n.bias));
                     //
                     net.Net.DeltaInputToHiddenWeights(deltaInputToHidden);
                     net.Net.DeltaHiddenToOutputWeights(deltaHiddenToOutput);
-                    net.Net.DeltaBiases(deltaInputBiases, deltaHiddenBiases, deltaOutputBiases);
+                    net.Net.DeltaBiases(deltaHiddenBiases, deltaOutputBiases);
 
                     var newResult = net.Net.OutputFor(net.InputEncoding(pair.Data));
 
-                    if (net.Closest(pair.Label, newResult, bestSoFar).Equals(bestSoFar))
+                    if (net.CloserOutputToTarget(pair.Label, newResult, bestSoFar).Equals(bestSoFar))
                     {
                         //then revert
                         net.Net.DeltaInputToHiddenWeights(-deltaInputToHidden);
                         net.Net.DeltaHiddenToOutputWeights(deltaHiddenToOutput);
-                        net.Net.DeltaBiases(deltaInputBiases, deltaHiddenBiases, deltaOutputBiases);
+                        net.Net.DeltaBiases(deltaHiddenBiases, deltaOutputBiases);
                     }
                     else
                     {

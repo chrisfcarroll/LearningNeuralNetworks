@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using LearningNeuralNetworks.LearningAlgorithms;
-using MnistParser;
 
 namespace LearningNeuralNetworks
 {
@@ -17,7 +16,7 @@ namespace LearningNeuralNetworks
     /// <item>Output layer weights to a Label</item>
     /// <item>A Label back to output layer weights</item>
     /// </list>
-    /// And, a distance function for output layer weights.
+    /// And, a distance function for output layer weights. Which can also tell you which of two output weights is closer to a given label.
     /// </summary>
     /// <typeparam name="TData"></typeparam>
     /// <typeparam name="TLabel"></typeparam>
@@ -29,19 +28,7 @@ namespace LearningNeuralNetworks
         public Func<TData,double[]>  InputEncoding { get; set; }
         public Distances Distances { get; set; }
         public Distance  Distance { get; set; }
-
-        public IEnumerable<ZeroToOne> Closest(TLabel targetLabel, IEnumerable<ZeroToOne> candidateOutput1, IEnumerable<ZeroToOne> candidateOutput2)
-        {
-            var target = ReverseInterpretation(targetLabel);
-            return Distance(target, candidateOutput1) < Distance(target, candidateOutput2) ? candidateOutput1 : candidateOutput2;
-        }
         public NeuralNet3LayerSigmoid Net { get; }
-
-        public InterpretedNet<TData,TLabel> LearnFrom(IEnumerable<Pair<TData,TLabel>> trainingData, double trainingRateEta, LearningAlgorithm algorithm)
-        {
-            algorithm.Apply(this, trainingData, trainingRateEta);
-            return this;
-        }
 
         public TLabel LastOutput => Net.LastOutputAs(OutputInterpretation);
 
@@ -51,7 +38,11 @@ namespace LearningNeuralNetworks
             return LastOutput;
         }
 
-
+        public InterpretedNet<TData, TLabel> LearnFrom(IEnumerable<Pair<TData, TLabel>> trainingData, double trainingRateEta, LearningAlgorithm algorithm)
+        {
+            algorithm.Apply(this, trainingData, trainingRateEta);
+            return this;
+        }
 
         public InterpretedNet(NeuralNet3LayerSigmoid net, Func<TData, double[]> inputEncoding, Func<IEnumerable<ZeroToOne>, TLabel> outputInterpretation, Func<TLabel, IEnumerable<ZeroToOne>> reverseInterpretation, Distances distancesFunction)
         {
@@ -75,5 +66,16 @@ namespace LearningNeuralNetworks
         {
             return ActivateInputs(input).LastOutput;
         }
+    }
+
+
+    public static class InterpretedNetExtensions
+    {
+        public static IEnumerable<ZeroToOne> CloserOutputToTarget<TData,TLabel>(this InterpretedNet<TData,TLabel> @this, TLabel targetLabel, IEnumerable<ZeroToOne> candidateOutput1, IEnumerable<ZeroToOne> candidateOutput2)
+        {
+            var target = @this.ReverseInterpretation(targetLabel);
+            return @this.Distance(target, candidateOutput1) < @this.Distance(target, candidateOutput2) ? candidateOutput1 : candidateOutput2;
+        }
+
     }
 }

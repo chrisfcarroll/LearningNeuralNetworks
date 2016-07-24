@@ -43,13 +43,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LearningAlgorithms\GradientDescent.cs" />
+    <Compile Include="LearningAlgorithms\BPWithStochasticGradientDescent.cs" />
+    <Compile Include="LearningAlgorithms\BackPropagationWithGradientDescent.cs" />
     <Compile Include="InterpretedNet.cs" />
     <Compile Include="LearningAlgorithms\LearningAlgorithm.cs" />
+    <Compile Include="LearningAlgorithms\BackPropagationWithStochasticGradientDescent.cs" />
     <Compile Include="Matrix.cs" />
     <Compile Include="MnistSigmoidLearner1NetBuilderTrainer.cs" />
     <Compile Include="NeuralNet3LayerSigmoid.cs" />
     <Compile Include="LearningAlgorithms\RandomWalkFall.cs" />
+    <Compile Include="NeuralNet3LayerSigmoid_Builders.cs" />
+    <Compile Include="Pair.cs" />
     <Compile Include="SigmoidNeuronBuilder.cs" />
     <Compile Include="SigmoidNeuron.cs" />
     <Compile Include="Perceptron.cs" />

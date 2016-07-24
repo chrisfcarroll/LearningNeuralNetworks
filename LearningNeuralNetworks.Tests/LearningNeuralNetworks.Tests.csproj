@@ -48,8 +48,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="TestBase, Version=3.0.8.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\TestBase.3.0.8.3\lib\net40\TestBase.dll</HintPath>
+    <Reference Include="TestBase, Version=3.0.8.5, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TestBase.3.0.8.5\lib\net40\TestBase.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -62,7 +62,8 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="NeuralNetworks.cs" />
+    <Compile Include="LearningAlgorithms\TheBackPropagationWithGradientDescentAlgorithm.cs" />
+    <Compile Include="NeuralNetworksWith3LayersAndSigmoidActivation.cs" />
     <Compile Include="TheMnistLearner1Builder.cs" />
     <Compile Include="SigmoidNeurons.cs" />
     <Compile Include="Perceptrons.cs" />
