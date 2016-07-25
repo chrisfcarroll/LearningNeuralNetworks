@@ -18,7 +18,7 @@ namespace LearningNeuralNetworks.LearningAlgorithms
             return net;
         }
 
-        internal static DeltasForNeuralNet DeltasFor<TData, TLabel>(InterpretedNet<TData, TLabel> net, Pair<TData,TLabel> target)
+        public static DeltasFor2LayersOfNet DeltasFor<TData, TLabel>(InterpretedNet<TData, TLabel> net, Pair<TData,TLabel> target)
         {
             return DeltasFor(
                 net.Net, 
@@ -27,7 +27,7 @@ namespace LearningNeuralNetworks.LearningAlgorithms
                 );
         }
 
-        internal static DeltasForNeuralNet DeltasFor(NeuralNet3LayerSigmoid net, IEnumerable<double> inputs, IEnumerable<ZeroToOne> targets)
+        public static DeltasFor2LayersOfNet DeltasFor(NeuralNet3LayerSigmoid net, IEnumerable<double> inputs, IEnumerable<ZeroToOne> targets)
         {
             var outputs = net.OutputFor(inputs.Select(i => (ZeroToOne)i)).ToArray();
             var outputDeltas = outputs
@@ -50,7 +50,7 @@ namespace LearningNeuralNetworks.LearningAlgorithms
             {
                     hiddenWeightDeltas[i, j] = net.InputLayer[i].FiringRate * hiddenDeltas[j];
             }
-            return new DeltasForNeuralNet
+            return new DeltasFor2LayersOfNet
             {
                 OutputBiases = net.OutputLayer.Zip(outputDeltas, (neuron, delta) => neuron.Bias * delta).ToArray(),
                 OutputWeights = outputWeightDeltas,
@@ -60,7 +60,7 @@ namespace LearningNeuralNetworks.LearningAlgorithms
         }
     }
 
-    public class DeltasForNeuralNet
+    public class DeltasFor2LayersOfNet
     {
         public double[] OutputBiases;
         public double[] HiddenBiases;

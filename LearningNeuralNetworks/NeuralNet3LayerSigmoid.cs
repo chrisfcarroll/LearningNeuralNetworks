@@ -26,13 +26,12 @@ namespace LearningNeuralNetworks
         /// <param name="hiddenLayerSize"></param>
         /// <param name="outputLayerSize"></param>
         public NeuralNet3LayerSigmoid(int inputLayerSize, int hiddenLayerSize, int outputLayerSize)
-        {
-            InputLayer = Neuron.NewSensorArray(inputLayerSize);
-            HiddenLayer= Neuron.NewSigmoidArray(hiddenLayerSize);
-            OutputLayer= Neuron.NewSigmoidArray(outputLayerSize);
-            InputToHidden = new MatrixD(inputLayerSize, hiddenLayerSize);
-            HiddenToOutput = new MatrixD(hiddenLayerSize, outputLayerSize);
-        }
+                               : this(
+                                     new double[inputLayerSize, hiddenLayerSize], 
+                                     new double[hiddenLayerSize, outputLayerSize],
+                                     new double[hiddenLayerSize], 
+                                     new double[outputLayerSize]
+                                     ){}
 
         /// <summary>
         /// Construct a 3 layer sigmoid neural net with all weights and biases initialised to given values

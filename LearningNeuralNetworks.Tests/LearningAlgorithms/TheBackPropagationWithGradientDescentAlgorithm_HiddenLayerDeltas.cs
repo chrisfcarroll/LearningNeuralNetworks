@@ -27,7 +27,7 @@ namespace LearningNeuralNetworks.Tests.LearningAlgorithms
                 var exOutputDelta = -0.040681125112339026d;
                 var exHiddenDelta0 = -0.0023685025015371172d;
                 var exHiddenDelta1 = -0.0075927347073177845d;
-                var expectedOutputDeltas = new DeltasForNeuralNet
+                var expectedOutputDeltas = new DeltasFor2LayersOfNet
                 {
 
                     OutputBiases = new[] { 0d },
@@ -51,7 +51,7 @@ namespace LearningNeuralNetworks.Tests.LearningAlgorithms
                             }
                         }),
                 };
-                var expectedDeltaValues = new DeltasForNeuralNet
+                var expectedDeltaValues = new DeltasFor2LayersOfNet
                 {
 
                     OutputBiases = new[] { 0d },
@@ -98,7 +98,7 @@ namespace LearningNeuralNetworks.Tests.LearningAlgorithms
                 var exHiddenDelta00 = -0.0023685025015371172d;
                 var exHiddenDelta01 = -0.0075927347073177845d;
 
-                var expectedDeltas = new DeltasForNeuralNet
+                var expectedDeltas = new DeltasFor2LayersOfNet
                 {
 
                     OutputBiases = new[] { 0d, 0d, 0d },

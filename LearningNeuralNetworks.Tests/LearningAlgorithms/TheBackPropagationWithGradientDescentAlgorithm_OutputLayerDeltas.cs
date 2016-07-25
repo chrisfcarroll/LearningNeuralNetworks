@@ -24,7 +24,7 @@ namespace LearningNeuralNetworks.Tests.LearningAlgorithms
                  * 0.680267196698649d, 0.663738697404353d, 0.690283492907644d
                  */
                 var exOutputDelta = -0.040681125112339026d;
-                var expected = new DeltasForNeuralNet
+                var expected = new DeltasFor2LayersOfNet
                 {
 
                     OutputBiases = new[] { 0d },
@@ -51,7 +51,7 @@ namespace LearningNeuralNetworks.Tests.LearningAlgorithms
                 var exOutputDelta1 = -0.040681125112339026d;
                 var exOutputDelta2 = hiddenToOutputWeights[1].Equals(0) ? 0 : exOutputDelta1;
                 var exOutputDelta3 = hiddenToOutputWeights[2].Equals(0) ? 0 : exOutputDelta1;
-                var expected = new DeltasForNeuralNet
+                var expected = new DeltasFor2LayersOfNet
                 {
 
                     OutputBiases = new[] { 0d, 0d, 0d },
@@ -66,25 +66,6 @@ namespace LearningNeuralNetworks.Tests.LearningAlgorithms
                 calculatedDeltas.OutputBiases.ShouldEqualByValue(expected.OutputBiases);
             }
 
-        }
-
-        int CountHits(InterpretedNet<string, int> guineaPig, Pair<string, int>[] trainingData)
-        {
-            return trainingData.Count(p => guineaPig.OutputFor(p.Data) == p.Label);
-        }
-
-        Pair<string, int>[] GenerateTrainingData()
-        {
-            var rnd = new Random();
-            var vowels = new[] {'A', 'E', 'I', 'O', 'U'};
-            var trainingData = new Pair<string, int>[1000];
-            for (int i = 0; i < 1000; i++)
-            {
-                var data = new string(Enumerable.Range(0, 10).Select(x => (char) rnd.Next('A', 'Z')).ToArray());
-                var label = data.Count(c => vowels.Contains(c));
-                trainingData[i] = new Pair<string, int>(data, label);
-            }
-            return trainingData;
         }
     }
 }

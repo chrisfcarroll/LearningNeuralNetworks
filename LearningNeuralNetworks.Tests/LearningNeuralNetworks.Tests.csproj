@@ -63,6 +63,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="LearningAlgorithms\TheBackPropagationWithGradientDescentAlgorithm_HiddenLayerDeltas.cs" />
+    <Compile Include="LearningAlgorithms\TheBackPropagationWithGradientDescentAlgorithm_LearnsNetworks.cs" />
     <Compile Include="LearningAlgorithms\TheBackPropagationWithGradientDescentAlgorithm_OutputLayerDeltas.cs" />
     <Compile Include="NeuralNet3LayerSigmoids_Constructors.cs" />
     <Compile Include="NeuralNet3LayerSigmoids.cs" />
