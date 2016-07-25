@@ -16,7 +16,8 @@ namespace LearningNeuralNetworks
         public Ninput[] Inputs;
         public ActivationFunction ActivationFunction;
 
-        public ZeroToOne FiringRate => ActivationFunction(Inputs.DotProduct() + Bias);
+        public ZeroToOne FiringRate => ActivationFunction(Input);
+        internal double Input => Inputs.DotProduct() + Bias;
     }
 
 

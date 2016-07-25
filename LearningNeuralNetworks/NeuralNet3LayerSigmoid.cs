@@ -153,10 +153,10 @@ namespace LearningNeuralNetworks
             for (int i = 0; i < OutputLayer.Length; i++){ OutputLayer[i].Bias = outputLayerBiases[i]; }
             return this;
         }
-        public NeuralNet3LayerSigmoid DeltaBiases(IEnumerable<double> hiddenLayerBiases, IEnumerable<double> outputLayerBiases)
+        public NeuralNet3LayerSigmoid DeltaBiases(IEnumerable<double> hiddenLayerBiases = null, IEnumerable<double> outputLayerBiases = null)
         {
-            for (int i = 0; i < HiddenLayer.Length; i++) { HiddenLayer[i].Bias += hiddenLayerBiases.ElementAt(i); }
-            for (int i = 0; i < OutputLayer.Length; i++) { OutputLayer[i].Bias += outputLayerBiases.ElementAt(i); }
+            if(hiddenLayerBiases!=null) { for (int i = 0; i < HiddenLayer.Length; i++) { HiddenLayer[i].Bias += hiddenLayerBiases.ElementAt(i); }}
+            if(outputLayerBiases!=null) { for (int i = 0; i < OutputLayer.Length; i++) { OutputLayer[i].Bias += outputLayerBiases.ElementAt(i); }}
             return this;
         }
     }

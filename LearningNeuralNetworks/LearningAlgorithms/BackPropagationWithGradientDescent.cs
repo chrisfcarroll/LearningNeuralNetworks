@@ -10,42 +10,69 @@ namespace LearningNeuralNetworks.LearningAlgorithms
         {
             foreach (var pair in trainingData)
             {
-                var output = net.OutputFor(pair.Data);
-                var deltaNablaForNet = ErrorFor(net,pair.Label);
-                net.Net.DeltaBiases(deltaNablaForNet.HiddenBiases, deltaNablaForNet.OutputBiases);
-                net.Net.DeltaInputToHiddenWeights(deltaNablaForNet.InputToHidden);
-                net.Net.DeltaHiddenToOutputWeights(deltaNablaForNet.HiddenToOutput);
+                var deltas = DeltasFor(net, pair);
+                net.Net.DeltaBiases( deltas.HiddenBiases, deltas.OutputBiases);
+                net.Net.DeltaHiddenToOutputWeights(deltas.OutputWeights);
+                net.Net.DeltaInputToHiddenWeights(deltas.HiddenWeights);
             }
             return net;
         }
 
-        public static DeltasFor2Layers ErrorFor<TData, TLabel>(InterpretedNet<TData, TLabel> net, TLabel target)
+        internal static DeltasForNeuralNet DeltasFor<TData, TLabel>(InterpretedNet<TData, TLabel> net, Pair<TData,TLabel> target)
         {
-            return new DeltasFor2Layers();
+            return DeltasFor(
+                net.Net, 
+                net.InputEncoding(target.Data).Select(i=>(double)i), 
+                net.ReverseInterpretation(target.Label)
+                );
         }
 
-        public static DeltasFor2Layers ErrorFor(NeuralNet3LayerSigmoid net, ZeroToOne[] target)
+        internal static DeltasForNeuralNet DeltasFor(NeuralNet3LayerSigmoid net, IEnumerable<double> inputs, IEnumerable<ZeroToOne> targets)
         {
-            return new DeltasFor2Layers();
+            var outputs = net.OutputFor(inputs.Select(i => (ZeroToOne)i)).ToArray();
+            var outputDeltas = outputs
+                               .Zip(targets, (o, target) =>  (target - o) * o * (1 - o)) /* see e.g. wikipedia https://en.wikipedia.org/wiki/Backpropagation#Derivation */
+                               .ToArray();
+
+            var outputWeightDeltas = new MatrixD(net.HiddenToOutput.RowCount, net.HiddenToOutput.ColumnCount);
+            var hiddenDeltaParts = new MatrixD(net.HiddenToOutput.RowCount, net.HiddenToOutput.ColumnCount);
+            for (int i = 0; i < outputWeightDeltas.RowCount; i++)
+            for (int j = 0; j < outputWeightDeltas.ColumnCount; j++)
+            {
+                outputWeightDeltas[i, j] = net.HiddenLayer[i].FiringRate * outputDeltas[j];
+                hiddenDeltaParts[i, j] =  outputDeltas[j] * (net.HiddenToOutput[i,j] + outputWeightDeltas[i,j]) * outputs[j] * (1 - outputs[j]);
+            }
+
+            var hiddenDeltas = hiddenDeltaParts.ByRows().Select(row => row.Sum()).ToArray();
+            var hiddenWeightDeltas = new MatrixD(net.InputToHidden.RowCount, net.InputToHidden.ColumnCount);
+            for (int i = 0; i < hiddenWeightDeltas.RowCount; i++)
+            for (int j = 0; j < hiddenWeightDeltas.ColumnCount; j++)
+            {
+                    hiddenWeightDeltas[i, j] = net.InputLayer[i].FiringRate * hiddenDeltas[j];
+            }
+            return new DeltasForNeuralNet
+            {
+                OutputBiases = net.OutputLayer.Zip(outputDeltas, (neuron, delta) => neuron.Bias * delta).ToArray(),
+                OutputWeights = outputWeightDeltas,
+                HiddenBiases = net.HiddenLayer.Zip(hiddenDeltas, (neuron, delta) => neuron.Bias * delta).ToArray(),
+                HiddenWeights = hiddenWeightDeltas
+            };
         }
     }
 
-    public class DeltasFor2Layers
+    public class DeltasForNeuralNet
     {
-        public double[] HiddenBiases;
         public double[] OutputBiases;
-        public MatrixD InputToHidden;
-        public MatrixD HiddenToOutput;
+        public double[] HiddenBiases;
+        public MatrixD OutputWeights;
+        public MatrixD HiddenWeights;
 
         public override string ToString()
         {
-            var hiddenBiases = "[" + HiddenBiases?.Aggregate("", (s, b) => s + ", " + b) + "]";
-            var outputBiases = "[" + OutputBiases?.Aggregate("", (s, b) => s + ", " + b) + "]";
+            var biases = "[" + OutputBiases?.Aggregate("", (s, b) => s + ", " + b) + "]";
             return 
-                $"Hidden Biases: {hiddenBiases ?? "none"}\n" + 
-                $"OutputBiases: {outputBiases ?? "none"}\n" +
-                $"HiddenWeights: {InputToHidden}\n" +
-                $"OutputWeights: {HiddenToOutput}\n" ;
+                $"OutputBiases: {biases ?? "none"}\n" +
+                $"OutputWeights: {OutputWeights}\n" ;
         }
     }
 }

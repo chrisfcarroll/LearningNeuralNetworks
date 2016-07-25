@@ -136,5 +136,19 @@ namespace LearningNeuralNetworks.Maths
         {
             return !Equals(left, right);
         }
+
+        public double[][] ByRows()
+        {
+            var result = new double[RowCount][];
+            for (int i = 0; i < RowCount; i++)
+            {
+                result[i]= new double[ColumnCount];
+                for (int j = 0; j < ColumnCount; j++)
+                {
+                    result[i][j] = data[i, j];
+                }
+            }
+            return result;
+        }
     }
 }
