@@ -16,7 +16,7 @@ namespace LearningNeuralNetworks.LearningAlgorithms
             this.batchSize = batchSize;
         }
 
-        public override InterpretedNet<TData, TLabel> Apply<TData, TLabel>(InterpretedNet<TData, TLabel> net, IEnumerable<Pair<TData, TLabel>> trainingData, double trainingRateEta)
+        public override InterpretedNet<TData, TLabel> Apply<TData, TLabel>(InterpretedNet<TData, TLabel> net, IEnumerable<Pair<TData, TLabel>> trainingData, double trainingRateEta, int iterations = 1)
         {
             var rand = new Random();
             var shuffledTrainingData = trainingData.OrderBy(e => rand.Next()).ToArray();

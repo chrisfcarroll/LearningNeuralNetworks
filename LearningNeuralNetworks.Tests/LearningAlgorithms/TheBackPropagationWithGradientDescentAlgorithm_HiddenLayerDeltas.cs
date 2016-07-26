@@ -58,8 +58,8 @@ namespace LearningNeuralNetworks.Tests.LearningAlgorithms
                     OutputWeights = new MatrixD(
                         new[,]
                         {
-                            {-0.040681125112339026d *  0.680267196698649d  }, // -0.0276740349387179
-                            {-0.040681125112339026d *  0.663738697404353d  }  // -0.0270016369910074
+                            { -0.027674034938717864 }, // -0.040681125112339026d *  0.680267196698649d +/- last two d.p.s
+                            { -0.027001636991007407 }  // -0.040681125112339026d *  0.663738697404353d +/- last two d.p.s
                         }),
                     HiddenBiases = new[] { 0d, 0d },
                     HiddenWeights = new MatrixD(
@@ -67,19 +67,23 @@ namespace LearningNeuralNetworks.Tests.LearningAlgorithms
                         {
                             {
                                 -0.000828975875537991d,
-                                -0.00265745714756122d
+                                -0.0026574571475612243d
                             }, 
                             {
-                                -0.00213165225138341d,
-                                -0.00683346123658601d
+                                -0.0021316522513834054d,
+                                -0.0068334612365860059d
                             }
                         }),
                 };
-
-                calculatedDeltas.OutputWeights.ShouldEqualByValue(expectedOutputDeltas.OutputWeights);
-                calculatedDeltas.OutputBiases.ShouldEqualByValue(expectedOutputDeltas.OutputBiases);
-                calculatedDeltas.HiddenWeights.ShouldEqualByValue(expectedOutputDeltas.HiddenWeights);
-                calculatedDeltas.HiddenBiases.ShouldEqualByValue(expectedOutputDeltas.HiddenBiases);
+                calculatedDeltas.OutputWeights.ShouldEqualByValue(expectedOutputDeltas.OutputWeights, "OutputWeights");
+                calculatedDeltas.OutputBiases.ShouldEqualByValue(expectedOutputDeltas.OutputBiases, "OutputBiases");
+                calculatedDeltas.HiddenWeights.ShouldEqualByValue(expectedOutputDeltas.HiddenWeights, "HiddenWeights");
+                calculatedDeltas.HiddenBiases.ShouldEqualByValue(expectedOutputDeltas.HiddenBiases, "HiddenBiases");
+                //
+                expectedOutputDeltas.HiddenBiases.ShouldEqualByValue(expectedDeltaValues.HiddenBiases, "HiddenBiases");
+                expectedOutputDeltas.OutputBiases.ShouldEqualByValue(expectedDeltaValues.OutputBiases, "OutputBiases");
+                expectedOutputDeltas.HiddenWeights.ShouldEqualByValue(expectedDeltaValues.HiddenWeights, "HiddenWeights");
+                expectedOutputDeltas.OutputWeights.ShouldEqualByValue(expectedDeltaValues.OutputWeights, "OutputWeights");
             }
 
             [TestCase(new[] { 0.35d, 0.9d }, new[] { 0.1d, 0.4d, 0.8d, 0.6d }, new[] { 0.3d,   0,   0,  /**/  0.9d,   0,    0 }, 0.5d)]

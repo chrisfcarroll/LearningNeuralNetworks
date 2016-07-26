@@ -23,9 +23,9 @@ namespace LearningNeuralNetworks.Tests
                             .SetInputToHiddenWeights( new double[3,1]{ {0}, { 0}, {0}} )
                             .SetHiddenToOutputWeights(new double[1,3] { { 0,0,0 } });
                 //
-                Console.WriteLine(net.OutputFor(inputs.ToZeroToOnes()).ToArray());
+                Console.WriteLine(net.OutputFor(inputs).ToArray());
                 //
-                net.OutputFor(inputs.ToZeroToOnes()).ShouldEqualByValue(new ZeroToOne[]{0.5, 0.5, 0.5});
+                net.OutputFor(inputs).ShouldEqualByValue(new ZeroToOne[]{0.5, 0.5, 0.5});
             }
 
             [TestCase(1, 1, 1)]
@@ -39,9 +39,9 @@ namespace LearningNeuralNetworks.Tests
                 var net = new NeuralNet3LayerSigmoid(new[,] { { h }, { h }, { h } }, new[,]{ { h,h,h } }, new[] { h }, new[] { h, h, h });
 
                 //
-                Console.WriteLine(net.OutputFor(inputs.ToZeroToOnes()));
+                Console.WriteLine(net.OutputFor(inputs));
 
-                net.OutputFor(inputs.ToZeroToOnes()).ToArray().ShouldBe(new ZeroToOne[] {1,1,1});
+                net.OutputFor(inputs).ToArray().ShouldBe(new ZeroToOne[] {1,1,1});
             }
 
             [TestCase(1, 1, 1)]
@@ -58,9 +58,9 @@ namespace LearningNeuralNetworks.Tests
                             .SetHiddenToOutputWeights(new double[1, 3] { { low, low, low } });
 
                 //
-                Console.WriteLine(net.OutputFor(inputs.ToZeroToOnes()));
+                Console.WriteLine(net.OutputFor(inputs));
 
-                net.OutputFor(inputs.ToZeroToOnes()).ToArray().ShouldBe(new ZeroToOne[] { 0,0,0 });
+                net.OutputFor(inputs).ToArray().ShouldBe(new ZeroToOne[] { 0,0,0 });
             }
 
             [TestCase(new[] { 0.35d, 0.9d }, new[] { 0.1d, 0.4d, 0.8d, 0.6d }, new[] { 0.3d, 0.9d }, 0.680267196698649d, 0.663738697404353d, 0.690283492907644d)]
@@ -68,11 +68,11 @@ namespace LearningNeuralNetworks.Tests
             {
                 var net = NeuralNet3LayerSigmoid.FromFlatWeightArrays(2, inputToHidden, hiddenToOutput);
                 //
-                net.ActivateInputs(inputs.ToZeroToOnes());
-                net.HiddenLayer[0].FiringRate.ShouldBe( (ZeroToOne)expectedH0, "Hidden 0 Firing Rate");
-                net.HiddenLayer[1].FiringRate.ShouldBe( (ZeroToOne)expectedH1, "Hidden 1 Firing Rate");
-                net.OutputLayer[0].FiringRate.ShouldBe( (ZeroToOne)expectedOutput, "Output 0 Firing Rate");
-                net.OutputFor(inputs.ToZeroToOnes()).ShouldBe( new ZeroToOne[] { expectedOutput} );
+                net.ActivateInputs(inputs);
+                net.HiddenLayer[0].FiringRate.ShouldBe( expectedH0, "Hidden 0 Firing Rate");
+                net.HiddenLayer[1].FiringRate.ShouldBe( expectedH1, "Hidden 1 Firing Rate");
+                net.OutputLayer[0].FiringRate.ShouldBe( expectedOutput, "Output 0 Firing Rate");
+                net.OutputFor(inputs).ShouldBe( new ZeroToOne[] { expectedOutput} );
             }
         }
     }

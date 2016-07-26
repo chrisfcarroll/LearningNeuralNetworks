@@ -27,6 +27,7 @@ namespace LearningNeuralNetworks
         public static implicit operator double(ZeroToOne input) { return input.value;}
         public static implicit operator ZeroToOne(double input) { return new ZeroToOne(input);}
         public static implicit operator bool(ZeroToOne input) { return input.AsBool;}
+
         public static implicit operator ZeroToOne(bool input) { return new ZeroToOne(input?1:0);}
 
         /// <summary>
@@ -47,6 +48,8 @@ namespace LearningNeuralNetworks
         public static bool operator !=(ZeroToOne left, ZeroToOne right) { return !left.Equals(right); }
 
         public override string ToString() { return value.ToString(); }
+        public string ToString(string format) { return value.ToString(format); }
+        public string ToString(IFormatProvider formatter) { return value.ToString(formatter); }
     }
 
     public static class ZeroToOneExtensions

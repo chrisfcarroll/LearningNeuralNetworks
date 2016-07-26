@@ -37,5 +37,29 @@ namespace LearningNeuralNetworks
             return FromFlatWeightArrays(inputLength, inputToHiddenWeights, hiddenToOutputWeights)
                     .SetBiases(hiddenBiases, outputBiases);
         }
+
+
+
+        public NeuralNet3LayerSigmoid Randomize(double scale=1)
+        {
+            var rnd= new Random();
+            for (int c = 0; c < HiddenLayer.Length; c++)
+            {
+                for (int r = 0; r < InputLayer.Length; r++)
+                {
+                    HiddenLayer[c].Inputs[r].Weight = InputToHidden[r, c] = (rnd.NextDouble() - 0.5) * scale;
+                }
+                HiddenLayer[c].Bias = (rnd.NextDouble() - 0.5) * scale;
+            }
+            for (int c = 0; c < OutputLayer.Length; c++)
+            {
+                for (int r = 0; r < HiddenLayer.Length; r++)
+                {
+                    OutputLayer[c].Inputs[r].Weight = HiddenToOutput[r, c] = (rnd.NextDouble() - 0.5) * scale;
+                }
+                OutputLayer[c].Bias = (rnd.NextDouble() - 0.5) * scale;
+            }
+            return this;
+        }
     }
 }

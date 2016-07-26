@@ -4,8 +4,11 @@ using System.Linq;
 
 namespace LearningNeuralNetworks.Maths
 {
-    static class MathExt
+    public static class MathExt
     {
+        public static bool AsSigmoidToBool(this double input){ return input >= 0.5; }
+        public static bool As0To1(this double input) { return (ZeroToOne)input; }
+
         public static double DotProduct(this IEnumerable<Ninput> inputs)
         {
             return inputs == null ?

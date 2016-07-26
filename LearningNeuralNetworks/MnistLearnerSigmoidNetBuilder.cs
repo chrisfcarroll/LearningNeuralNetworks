@@ -11,7 +11,7 @@ namespace LearningNeuralNetworks
         {
             return new InterpretedNet<Image,byte>(
                         new NeuralNet3LayerSigmoid(784, hiddenLayerSize, 10),
-                        image => image.As1Ddoubles.Select(x=>(ZeroToOne)x).ToArray(),
+                        image => image.As1Ddoubles.ToArray(),
                         e=>(byte) e.ArgMaxIndex(n=>n),
                         b => Enumerable.Range(0,10).Select(i => i==b? 1 :0).Select(i => (ZeroToOne)i),
                         (l,r) => Enumerable.Range(0, 10).Select(i => Math.Abs(l.ElementAt(i) - r.ElementAt(i)))

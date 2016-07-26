@@ -14,7 +14,7 @@ namespace LearningNeuralNetworks.LearningAlgorithms
     {
         public int Iterations { get;}
 
-        public override InterpretedNet<TData, TLabel> Apply<TData, TLabel>(InterpretedNet<TData, TLabel> net, IEnumerable<Pair<TData, TLabel>> trainingData, double trainingRateEta)
+        public override InterpretedNet<TData, TLabel> Apply<TData, TLabel>(InterpretedNet<TData, TLabel> net, IEnumerable<Pair<TData, TLabel>> trainingData, double trainingRateEta, int iterations = 1)
         {
             foreach (var pair in trainingData)
             {

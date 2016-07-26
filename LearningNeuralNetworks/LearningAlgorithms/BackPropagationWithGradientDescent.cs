@@ -6,8 +6,10 @@ namespace LearningNeuralNetworks.LearningAlgorithms
 {
     public class BackPropagationWithGradientDescent : LearningAlgorithm
     {
-        public override InterpretedNet<TData, TLabel> Apply<TData,TLabel>(InterpretedNet<TData, TLabel> net, IEnumerable<Pair<TData, TLabel>> trainingData, double trainingRateEta)
+        //TODO trainingrate is ignored
+        public override InterpretedNet<TData, TLabel> Apply<TData,TLabel>(InterpretedNet<TData, TLabel> net, IEnumerable<Pair<TData, TLabel>> trainingData, double trainingRateEta, int iterations=1)
         {
+            for(int i=0; i<iterations; i++)
             foreach (var pair in trainingData)
             {
                 var deltas = DeltasFor(net, pair);
@@ -29,7 +31,7 @@ namespace LearningNeuralNetworks.LearningAlgorithms
 
         public static DeltasFor2LayersOfNet DeltasFor(NeuralNet3LayerSigmoid net, IEnumerable<double> inputs, IEnumerable<ZeroToOne> targets)
         {
-            var outputs = net.OutputFor(inputs.Select(i => (ZeroToOne)i)).ToArray();
+            var outputs = net.OutputFor(inputs).ToArray();
             var outputDeltas = outputs
                                .Zip(targets, (o, target) =>  (target - o) * o * (1 - o)) /* see e.g. wikipedia https://en.wikipedia.org/wiki/Backpropagation#Derivation */
                                .ToArray();
@@ -69,9 +71,12 @@ namespace LearningNeuralNetworks.LearningAlgorithms
 
         public override string ToString()
         {
-            var biases = "[" + OutputBiases?.Aggregate("", (s, b) => s + ", " + b) + "]";
-            return 
-                $"OutputBiases: {biases ?? "none"}\n" +
+            var hiddenBiases = "[" + HiddenBiases?.Aggregate("", (s, b) => s + ", " + b) + "]";
+            var outputBiases = "[" + OutputBiases?.Aggregate("", (s, b) => s + ", " + b) + "]";
+            return
+                $"HiddenBiases: {hiddenBiases ?? "none"}\n" +
+                $"HiddenWeights: {OutputWeights}\n" +
+                $"OutputBiases: {outputBiases ?? "none"}\n" +
                 $"OutputWeights: {OutputWeights}\n" ;
         }
     }

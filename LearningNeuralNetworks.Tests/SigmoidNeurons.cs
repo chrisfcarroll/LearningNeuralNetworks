@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using LearningNeuralNetworks.Maths;
 using LearningNeuralNetworks.Tests.TestFrameworkChanges;
 using NUnit.Framework;
 using TestBase.Shoulds;
@@ -25,7 +26,7 @@ namespace LearningNeuralNetworks.Tests
         {
             var inputs = SensorNeuronBuilder.WithValues(fixedInputSensors);
             //
-          	bool isOn = SigmoidNeuronBuilder.Nand(inputs).FiringRate;
+          	bool isOn = SigmoidNeuronBuilder.Nand(inputs).FiringRate.AsSigmoidToBool();
             //
             isOn.ShouldBe(expected);
         }
@@ -34,16 +35,16 @@ namespace LearningNeuralNetworks.Tests
         public void Can_model_binary_Or()
         {
             SigmoidNeuronBuilder.Or(SensorNeuronBuilder.On(), SensorNeuronBuilder.Off())
-              	.FiringRate.AsBool
-              	.ShouldBeTrue();
+              	.FiringRate.AsSigmoidToBool()
+                .ShouldBeTrue();
 
             SigmoidNeuronBuilder.Or(SensorNeuronBuilder.Off(), SensorNeuronBuilder.Off(),SensorNeuronBuilder.On(), SensorNeuronBuilder.Off())
-              	.FiringRate.AsBool
-              	.ShouldBeTrue();
+              	.FiringRate.AsSigmoidToBool()
+                .ShouldBeTrue();
 
             SigmoidNeuronBuilder.Or(SensorNeuronBuilder.Off(), SensorNeuronBuilder.Off())
-              	.FiringRate.AsBool
-              	.ShouldBeFalse();
+              	.FiringRate.AsSigmoidToBool()
+                .ShouldBeFalse();
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using LearningNeuralNetworks.Maths;
 
 namespace LearningNeuralNetworks
@@ -79,8 +80,8 @@ namespace LearningNeuralNetworks
             for (int i = 0; i < InputToHidden.RowCount; i++)
             for (int j = 0; j < InputToHidden.ColumnCount; j++)
             {
-                var Wij= InputToHidden[i, j] += inputToHiddenWeights[i, j];
-                HiddenLayer[j].Inputs[i].Weight = Wij;
+                InputToHidden[i, j] += inputToHiddenWeights[i, j];
+                HiddenLayer[j].Inputs[i].Weight += inputToHiddenWeights[i, j];
             }
             return this;
 
@@ -104,13 +105,13 @@ namespace LearningNeuralNetworks
             for (int i = 0; i < HiddenToOutput.RowCount; i++)
             for (int j = 0; j < HiddenToOutput.ColumnCount; j++)
             {
-                var Wij = HiddenToOutput[i, j] += hiddenToOutputWeights[i, j];
-                OutputLayer[j].Inputs[i].Weight = Wij;
+                HiddenToOutput[i, j] += hiddenToOutputWeights[i, j];
+                OutputLayer[j].Inputs[i].Weight += hiddenToOutputWeights[i, j];
             }
             return this;
         }
 
-        public NeuralNet3LayerSigmoid ActivateInputs(IEnumerable<ZeroToOne> inputs)
+        public NeuralNet3LayerSigmoid ActivateInputs(IEnumerable<double> inputs)
         {
             var sharedLength = Math.Min(inputs.Count(), InputLayer.Length);
             for (int i = 0; i < sharedLength; i++)
@@ -120,17 +121,17 @@ namespace LearningNeuralNetworks
             return this;
         }
 
-        public NeuralNet3LayerSigmoid ActivateInputs(params ZeroToOne[] inputs)
+        public NeuralNet3LayerSigmoid ActivateInputs(params double[] inputs)
         {
-            ActivateInputs(inputs as IEnumerable<ZeroToOne>);
+            ActivateInputs(inputs as IEnumerable<double>);
             return this;
         }
 
-        public IEnumerable<ZeroToOne> OutputFor(params ZeroToOne[] inputs)
+        public IEnumerable<ZeroToOne> OutputFor(params double[] inputs)
         {
             return ActivateInputs(inputs).LastOutputs.ToArray();
         }
-        public IEnumerable<ZeroToOne> OutputFor(IEnumerable<ZeroToOne> inputs)
+        public IEnumerable<ZeroToOne> OutputFor(IEnumerable<double> inputs)
         {
             return ActivateInputs(inputs).LastOutputs.ToArray();
         }
@@ -138,7 +139,7 @@ namespace LearningNeuralNetworks
 
         public IEnumerable<ZeroToOne> LastOutputs
         {
-            get { return OutputLayer.Select(n => n.FiringRate).ToArray(); }
+            get { return OutputLayer.Select(n => (ZeroToOne)n.FiringRate).ToArray(); }
         }
 
         public T LastOutputAs<T>(Func<IEnumerable<ZeroToOne>, T> interpretationOfOutputs)
@@ -157,6 +158,25 @@ namespace LearningNeuralNetworks
             if(hiddenLayerBiases!=null) { for (int i = 0; i < HiddenLayer.Length; i++) { HiddenLayer[i].Bias += hiddenLayerBiases.ElementAt(i); }}
             if(outputLayerBiases!=null) { for (int i = 0; i < OutputLayer.Length; i++) { OutputLayer[i].Bias += outputLayerBiases.ElementAt(i); }}
             return this;
+        }
+
+        public override string ToString()
+        {
+            var sb= new StringBuilder( typeof(NeuralNet3LayerSigmoid).Name );
+            sb.AppendLine($"<{InputLayer.Length},{HiddenLayer.Length},{OutputLayer.Length}>");
+            sb.Append("Last Inputs   : ");
+            sb.AppendLine(string.Join(",", (IEnumerable<Neuron>)InputLayer));
+            sb.AppendLine("Input to Hidden Weights:");
+            sb.Append(InputToHidden);
+            sb.Append("Hidden Biases : ");
+            sb.AppendLine(string.Join("," , HiddenLayer.Select(n=>n.Bias)));
+            sb.AppendLine("Hidden to Output Weights:");
+            sb.Append(HiddenToOutput);
+            sb.Append("Output Biases : ");
+            sb.AppendLine(string.Join(",", OutputLayer.Select(n=>n.Bias)));
+            sb.AppendLine("Last Outputs : ");
+            sb.Append(string.Join(",", LastOutputs));
+            return sb.ToString();
         }
     }
 }

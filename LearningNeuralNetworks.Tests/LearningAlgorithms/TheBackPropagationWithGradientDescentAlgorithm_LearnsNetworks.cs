@@ -13,28 +13,25 @@ namespace LearningNeuralNetworks.Tests.LearningAlgorithms
         [TestFixture]
         public class LearnsNetworks
         {
-            [TestCase(10,  5, 1, 6000, 0.05)]
-            [TestCase(10, 10, 1, 3000, 0.05)]
-            [TestCase(10, 20, 1, 3000, 0.05)]
-            [TestCase(10,  1, 1, 3000, 0.2)]
-            [TestCase(10,  1, 1, 3000, 0.1)]
-            [TestCase(10,  1, 1, 3000, 0.01)]
-            public void Given__ASigmoidNetworkOfSuitableSize__AndSomeTrainingData(int inputLayerSize, int hiddenLayerSize, int outputLayerSize, int trainingSamplesCount, double trainingRate)
+            [TestCase(10,  50, 1, 2000, 1, 100)]
+            [TestCase(10,  25, 1, 2000, 2, 100)]
+            [TestCase(10,  20, 1, 2000, 3, 100)]
+            public void Given__ASigmoidNetworkOfSuitableSize__AndSomeTrainingData(int inputLayerSize, int hiddenLayerSize, int outputLayerSize, int iterations, double trainingRate, int trainingSamplesCount)
             {
-                var rawNet = new NeuralNet3LayerSigmoid(inputLayerSize, hiddenLayerSize, outputLayerSize);
-                var interpetedNet= new InterpretedNet<string,int>(
+                var rawNet = new NeuralNet3LayerSigmoid(inputLayerSize, hiddenLayerSize, outputLayerSize).Randomize(8);
+                var netBeforeTraining = rawNet.ToString();
+                var interpetedNet = new InterpretedNet<string,int>(
                     rawNet,
-                    s => s.Select(c=> (ZeroToOne)(1.0d * c/256) ).ToArray(),
-                    o => (int)(o.Single() * 10),
-                    i => new [] { (ZeroToOne)(i / 10d)},
+                    s => s.Select(c=> 1.0d * c ).ToArray(),
+                    o => (int)(o.Single() * 11),
+                    i => new [] { (ZeroToOne)(1/11d * i)},
                     (x,y) => x.Zip(y, (xx,yy)=> Math.Abs(xx-yy))
                     );
                 var trainingData = GenerateRandomDataAndLabels(trainingSamplesCount);
                 var testData = GenerateRandomDataAndLabels(10 + trainingSamplesCount/10);
                 var scoreBeforeTraining = CountHits(interpetedNet, testData);
 
-                //
-                new BackPropagationWithGradientDescent().Apply(interpetedNet, trainingData, trainingRate);
+                new BackPropagationWithGradientDescent().ApplyToBatches(interpetedNet, trainingData, trainingSamplesCount/10, trainingRate, iterations);
                 var scoreAfterTraining = CountHits(interpetedNet, testData);
 
                 //
@@ -42,8 +39,10 @@ namespace LearningNeuralNetworks.Tests.LearningAlgorithms
                         trainingSamplesCount, 
                         scoreBeforeTraining, scoreAfterTraining,
                         inputLayerSize, hiddenLayerSize, outputLayerSize);
-                GenerateRandomDataAndLabels(30).Each(t => Console.WriteLine("{0} \t(should be \t{1}) \t: \t{2} ", t.Data, t.Label, interpetedNet.OutputFor(t.Data)));
-
+                GenerateRandomDataAndLabels(10).Each(t => Console.WriteLine("{0} \t(should be \t{1}) \t: \t{2} ", t.Data, t.Label, interpetedNet.OutputFor(t.Data)));
+                Console.WriteLine(netBeforeTraining);
+                Console.WriteLine(rawNet);
+                //
                 scoreAfterTraining.Data.ShouldBeGreaterThan(scoreBeforeTraining.Data * 1.1);
             }
 

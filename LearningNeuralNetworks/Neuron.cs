@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using LearningNeuralNetworks.Maths;
 
 namespace LearningNeuralNetworks
@@ -16,8 +18,28 @@ namespace LearningNeuralNetworks
         public Ninput[] Inputs;
         public ActivationFunction ActivationFunction;
 
-        public ZeroToOne FiringRate => ActivationFunction(Input);
+        public double FiringRate => ActivationFunction(Input);
         internal double Input => Inputs.DotProduct() + Bias;
+
+        public string ToString(string format)
+        {
+            var inputs = Inputs != null
+                             ? string.Join(",", Inputs.Select(i => i.Weight.ToString(format))) + "=>"
+                             : "";
+            return
+                inputs +
+                (ActivationFunction == Id
+                     ? "Id=>"
+                     : ActivationFunction == MathExt.Sigmoid
+                           ? "Sigmoid=>"
+                           : "") +
+                FiringRate.ToString(format);
+        }
+
+        public override string ToString()
+        {
+            return ToString(""); 
+        }
     }
 
 

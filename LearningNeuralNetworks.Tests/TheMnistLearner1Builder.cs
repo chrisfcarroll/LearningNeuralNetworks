@@ -23,7 +23,7 @@ namespace LearningNeuralNetworks.Tests
         public void BuildsANetworkWithInterpretationOfOutputLayerAsADigit()
         {
             var net = MnistLearnerSigmoidNetBuilder.Build(15);
-            net.OutputFor(new[] { (ZeroToOne)1d}).ShouldBeOfType<byte>();
+            net.OutputFor(new[] { 1d}).ShouldBeOfType<byte>();
             //
             var digitsAsOutputNeurons =
                 Enumerable.Range(0, 10)
@@ -74,7 +74,7 @@ namespace LearningNeuralNetworks.Tests
             return
                 testData.Count(
                     d =>
-                        net.ActivateInputs(d.Data.As1Ddoubles.ToZeroToOnes())   
+                        net.ActivateInputs(d.Data.As1Ddoubles)   
                             .LastOutputAs(o => o.ArgMaxIndex(e => e)) == d.Label);
         }
     }
