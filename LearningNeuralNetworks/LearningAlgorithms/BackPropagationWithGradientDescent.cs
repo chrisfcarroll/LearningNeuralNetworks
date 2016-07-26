@@ -13,9 +13,9 @@ namespace LearningNeuralNetworks.LearningAlgorithms
             foreach (var pair in trainingData)
             {
                 var deltas = DeltasFor(net, pair);
-                net.Net.DeltaBiases( deltas.HiddenBiases, deltas.OutputBiases);
-                net.Net.DeltaHiddenToOutputWeights(deltas.OutputWeights);
-                net.Net.DeltaInputToHiddenWeights(deltas.HiddenWeights);
+                net.Net.DeltaBiases( deltas.HiddenBiases, deltas.OutputBiases, trainingRateEta);
+                net.Net.DeltaHiddenToOutputWeights(deltas.OutputWeights, trainingRateEta);
+                net.Net.DeltaInputToHiddenWeights(deltas.HiddenWeights, trainingRateEta);
             }
             return net;
         }
