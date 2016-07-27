@@ -1,8 +1,7 @@
-using System;
 using System.Linq;
 using LearningNeuralNetworks.Maths;
 
-namespace LearningNeuralNetworks
+namespace LearningNeuralNetworks.V1
 {
     public delegate double ActivationFunction(double inputValue);
 

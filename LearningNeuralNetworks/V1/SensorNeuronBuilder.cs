@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LearningNeuralNetworks
+namespace LearningNeuralNetworks.V1
 {
     /// <summary>
     /// Builds Sensor Neurons - the activation function is the identity function. Used for the input layer of a network.

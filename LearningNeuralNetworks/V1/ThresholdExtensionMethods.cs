@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LearningNeuralNetworks
+namespace LearningNeuralNetworks.V1
 {
-    static class PerceptronExtensionMethods
+    static class ThresholdExtensionMethods
     {
-        public static int DotProduct(this IEnumerable<Pinput> inputs)
+        public static int DotProduct(this IEnumerable<ThresholdNeuron.Input> inputs)
         {
             return inputs==null ?
                     0 

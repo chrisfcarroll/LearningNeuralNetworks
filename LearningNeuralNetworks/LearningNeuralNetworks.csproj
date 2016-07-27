@@ -43,28 +43,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Neuron_Builders.cs" />
-    <Compile Include="SensorNeuronBuilder.cs" />
-    <Compile Include="LearningAlgorithms\BPWithStochasticGradientDescent.cs" />
+    <Compile Include="V1\Neuron_Builders.cs" />
+    <Compile Include="V1\SensorNeuronBuilder.cs" />
     <Compile Include="LearningAlgorithms\BackPropagationWithGradientDescent.cs" />
     <Compile Include="InterpretedNet.cs" />
     <Compile Include="LearningAlgorithms\LearningAlgorithm.cs" />
-    <Compile Include="LearningAlgorithms\BackPropagationWithStochasticGradientDescent.cs" />
     <Compile Include="Maths\MatrixD.cs" />
     <Compile Include="MnistLearnerSigmoidNetBuilder.cs" />
-    <Compile Include="NeuralNet3LayerSigmoid.cs" />
+    <Compile Include="V1\NeuralNet3LayerSigmoid.cs" />
     <Compile Include="LearningAlgorithms\RandomWalkFall.cs" />
-    <Compile Include="NeuralNet3LayerSigmoid_Builders.cs" />
-    <Compile Include="Pair.cs" />
-    <Compile Include="SigmoidNeuronBuilder.cs" />
-    <Compile Include="Neuron.cs" />
-    <Compile Include="Perceptron.cs" />
-    <Compile Include="PerceptronBuilder.cs" />
-    <Compile Include="PerceptronExtensionMethods.cs" />
+    <Compile Include="V1\NeuralNet3LayerSigmoid_Builders.cs" />
+    <Compile Include="V1\Pair.cs" />
+    <Compile Include="V1\SigmoidNeuronBuilder.cs" />
+    <Compile Include="V1\Neuron.cs" />
+    <Compile Include="V1\ThresholdNeuron.cs" />
+    <Compile Include="V1\ThresholdNeuronBuilder.cs" />
+    <Compile Include="V1\ThresholdExtensionMethods.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Maths\MathExt.cs" />
-    <Compile Include="ZeroToOne.cs" />
+    <Compile Include="V1\ZeroToOne.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -75,6 +73,7 @@
       <Name>MnistParser</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -14,7 +14,7 @@ namespace LearningNeuralNetworks.LearningAlgorithms
     {
         public int Iterations { get;}
 
-        public override InterpretedNet<TData, TLabel> Apply<TData, TLabel>(InterpretedNet<TData, TLabel> net, IEnumerable<Pair<TData, TLabel>> trainingData, double trainingRateEta, int iterations = 1)
+        public override InterpretedNet<TData, TLabel> Apply<TData, TLabel>(InterpretedNet<TData, TLabel> net, IEnumerable<V1.Pair<TData, TLabel>> trainingData, double trainingRateEta, int iterations = 1)
         {
             foreach (var pair in trainingData)
             {
@@ -23,7 +23,7 @@ namespace LearningNeuralNetworks.LearningAlgorithms
             return net;
         }
 
-        int MutateNetByRandomFalls<TData, TLabel>(InterpretedNet<TData, TLabel> net, double trainingRateEta, Pair<TData, TLabel> pair)
+        int MutateNetByRandomFalls<TData, TLabel>(InterpretedNet<TData, TLabel> net, double trainingRateEta, V1.Pair<TData, TLabel> pair)
         {
             var falls = 0;
             var bestSoFar = net.Net.OutputFor(net.InputEncoding(pair.Data));

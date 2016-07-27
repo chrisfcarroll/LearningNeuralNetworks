@@ -1,10 +1,10 @@
-﻿using System.Linq;
-using LearningNeuralNetworks.Maths;
+﻿using LearningNeuralNetworks.Maths;
 using LearningNeuralNetworks.Tests.TestFrameworkChanges;
+using LearningNeuralNetworks.V1;
 using NUnit.Framework;
 using TestBase.Shoulds;
 
-namespace LearningNeuralNetworks.Tests
+namespace LearningNeuralNetworks.Tests.V1
 {
     [TestFixture]
     public class SigmoidNeurons

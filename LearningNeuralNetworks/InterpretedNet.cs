@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LearningNeuralNetworks.LearningAlgorithms;
 using LearningNeuralNetworks.Maths;
+using LearningNeuralNetworks.V1;
 
 namespace LearningNeuralNetworks
 {
@@ -37,12 +38,6 @@ namespace LearningNeuralNetworks
         public TLabel OutputFor(TData input) { return ActivateInputs(input).LastOutput; }
 
         public TLabel OutputFor(double[] input) { Net.ActivateInputs(input); return LastOutput; }
-
-        public InterpretedNet<TData, TLabel> LearnFrom(IEnumerable<Pair<TData, TLabel>> trainingData, double trainingRateEta, LearningAlgorithm algorithm)
-        {
-            algorithm.Apply(this, trainingData, trainingRateEta);
-            return this;
-        }
 
         public InterpretedNet(NeuralNet3LayerSigmoid net, Func<TData, double[]> inputEncoding, Func<IEnumerable<ZeroToOne>, TLabel> outputInterpretation, Func<TLabel, IEnumerable<ZeroToOne>> reverseInterpretation, Distances distancesFunction)
         {

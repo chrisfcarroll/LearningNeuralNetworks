@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LearningNeuralNetworks.V1;
 
 namespace LearningNeuralNetworks.Maths
 {
     public static class MathExt
     {
-        public static bool AsSigmoidToBool(this double input){ return input >= 0.5; }
+        public static bool AsSigmoidToBool(this double input){ return input > 0.5; }
         public static bool As0To1(this double input) { return (ZeroToOne)input; }
 
         public static double DotProduct(this IEnumerable<Ninput> inputs)

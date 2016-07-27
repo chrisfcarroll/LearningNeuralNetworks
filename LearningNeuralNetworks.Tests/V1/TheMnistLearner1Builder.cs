@@ -1,15 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using LearningNeuralNetworks.Maths;
+using LearningNeuralNetworks.LearningAlgorithms;
+using LearningNeuralNetworks.V1;
 using MnistParser;
 using NUnit.Framework;
 using TestBase.Shoulds;
 
-namespace LearningNeuralNetworks.Tests
+namespace LearningNeuralNetworks.Tests.V1
 {
     [TestFixture]
     public class TheMnistSigmoidLearner1NetBuilderTrainer
     {
+        static string mnistRealDataDirectory = @"..\..\..\MnistParser\MnistData";
+
         [Test]
         public void BuildsANetworkWith784InputNeurons10OutputNeuronsAndTheRequestedHiddenLayerSize()
         {
@@ -52,30 +56,23 @@ namespace LearningNeuralNetworks.Tests
         }
 
 
-        //[Test,Ignore("Wrong test?")]
-        //public void IsTrainableAndCanLearn_ForInstanceByRandomWalkFall()
-        //{
-        //    var net = MnistSigmoidLearner1NetBuilderTrainer.Build(15);
-        //    var trainingData = new MnistFilesReader(mnistRealDataDirectory).TrainingData.Take(200).Select(p => (Pair<Image,byte>)(KeyValuePair<Image, byte>)p).ToArray();
-        //    var scoreBeforeTraining = HitsScoredOnTestData(net, trainingData);
-        //    //
-        //    net.LearnFrom(trainingData, 0.2, new RandomWalkFall());
-        //    //
-        //    var scoreAfterTraining = HitsScoredOnTestData(net, trainingData);
-        //    Console.WriteLine("Scores before/after training: {0} / {1}", scoreBeforeTraining, scoreAfterTraining);
-        //    if (scoreAfterTraining <= scoreBeforeTraining)
-        //    {
-        //        Assert.Inconclusive("Didn't learn anything this time. That's small random walks for you. Scores before/after training: {0} / {1}", scoreBeforeTraining, scoreAfterTraining);
-        //    }
-        //}
-
-        int HitsScoredOnTestData(NeuralNet3LayerSigmoid net, IEnumerable<Pair<Image,byte>> testData)
+        [Test,Ignore("BP not yet working")]
+        public void IsTrainableByBackPropagation()
         {
-            return
-                testData.Count(
-                    d =>
-                        net.ActivateInputs(d.Data.As1Ddoubles)   
-                            .LastOutputAs(o => o.ArgMaxIndex(e => e)) == d.Label);
+            var net = MnistLearnerSigmoidNetBuilder.Build(15);
+            var trainingData = new MnistFilesReader(mnistRealDataDirectory).TrainingData.Take(200).Select(p => new LearningNeuralNetworks.V1.Pair<Image, byte>(p.Data, p.Label)).ToArray();
+            var scoreBeforeTraining = HitsScoredOnTestData(net, trainingData);
+            //
+            new BackPropagationWithGradientDescent().ApplyToBatches(net, trainingData, 10, 3, 100);
+            //
+            var scoreAfterTraining = HitsScoredOnTestData(net, trainingData);
+            Console.WriteLine("Scores before/after training: {0} / {1}", scoreBeforeTraining, scoreAfterTraining);
+            scoreAfterTraining.ShouldBeGreaterThan(scoreBeforeTraining);
+        }
+
+        int HitsScoredOnTestData(InterpretedNet<Image, byte> net, IEnumerable<LearningNeuralNetworks.V1.Pair<Image,byte>> testData)
+        {
+            return testData.Count(d => net.OutputFor(d.Data) == d.Label);
         }
     }
 

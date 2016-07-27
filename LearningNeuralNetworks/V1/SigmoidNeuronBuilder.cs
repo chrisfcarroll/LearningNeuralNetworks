@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LearningNeuralNetworks.Maths;
 
-namespace LearningNeuralNetworks
+namespace LearningNeuralNetworks.V1
 {
     public static class SigmoidNeuronBuilder
     {

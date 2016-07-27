@@ -1,11 +1,9 @@
-using System;
-using System.Linq;
-using System.Linq.Expressions;
 using LearningNeuralNetworks.Maths;
+using LearningNeuralNetworks.V1;
 using NUnit.Framework;
 using TestBase.Shoulds;
 
-namespace LearningNeuralNetworks.Tests
+namespace LearningNeuralNetworks.Tests.V1
 {
     [TestFixture]
     public partial class NeuralNet3LayerSigmoids

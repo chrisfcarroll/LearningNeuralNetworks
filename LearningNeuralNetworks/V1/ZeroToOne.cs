@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace LearningNeuralNetworks
+namespace LearningNeuralNetworks.V1
 {
     /// <summary>
     /// Models a double value in the range 0 &lt;= value &lt;= 1
     /// </summary>
     public struct ZeroToOne : IEquatable<ZeroToOne>
     {
-        /// <summary>Two values which differ by less than this will be considered equal by <see cref="Equals(LearningNeuralNetworks.ZeroToOne)"/></summary>
+        /// <summary>Two values which differ by less than this will be considered equal by <see cref="Equals(ZeroToOne)"/></summary>
         public const double Epsilon = 1e-15;
         readonly double value;
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LearningNeuralNetworks
+namespace LearningNeuralNetworks.V1
 {
     public partial class NeuralNet3LayerSigmoid
     {

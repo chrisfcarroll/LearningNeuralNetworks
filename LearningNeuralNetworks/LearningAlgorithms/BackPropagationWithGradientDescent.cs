@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using LearningNeuralNetworks.Maths;
+using LearningNeuralNetworks.V1;
 
 namespace LearningNeuralNetworks.LearningAlgorithms
 {

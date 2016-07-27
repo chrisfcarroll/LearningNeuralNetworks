@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using LearningNeuralNetworks.Maths;
 
-namespace LearningNeuralNetworks
+namespace LearningNeuralNetworks.V1
 {
     /// <summary>
     /// Models a 3 layer neural network (i.e. input, hidden and output layer) of <see cref="Neuron"/>

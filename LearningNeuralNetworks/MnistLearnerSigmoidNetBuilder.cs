@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using LearningNeuralNetworks.Maths;
+using LearningNeuralNetworks.V1;
 using MnistParser;
 
 namespace LearningNeuralNetworks

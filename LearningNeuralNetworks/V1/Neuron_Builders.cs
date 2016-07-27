@@ -1,6 +1,6 @@
 using LearningNeuralNetworks.Maths;
 
-namespace LearningNeuralNetworks
+namespace LearningNeuralNetworks.V1
 {
     public partial class Neuron
     {

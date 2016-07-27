@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace LearningNeuralNetworks
+namespace LearningNeuralNetworks.V1
 {
     public struct Pair<TData,TLabel>
     {

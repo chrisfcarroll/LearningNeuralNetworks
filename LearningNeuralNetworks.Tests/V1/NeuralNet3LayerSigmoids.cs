@@ -1,9 +1,10 @@
 using System;
 using System.Linq;
+using LearningNeuralNetworks.V1;
 using NUnit.Framework;
 using TestBase.Shoulds;
 
-namespace LearningNeuralNetworks.Tests
+namespace LearningNeuralNetworks.Tests.V1
 {
     [TestFixture]
     public partial class NeuralNet3LayerSigmoids
@@ -63,7 +64,7 @@ namespace LearningNeuralNetworks.Tests
                 net.OutputFor(inputs).ToArray().ShouldBe(new ZeroToOne[] { 0,0,0 });
             }
 
-            [TestCase(new[] { 0.35d, 0.9d }, new[] { 0.1d, 0.4d, 0.8d, 0.6d }, new[] { 0.3d, 0.9d }, 0.680267196698649d, 0.663738697404353d, 0.690283492907644d)]
+            [TestCase(new[] { 0.35d, 0.9d }, new[] { 0.1d, 0.4d, 0.8d, 0.6d }, new[] { 0.3d, 0.9d }, 0.68026719669864855d, 0.66373869740435276d, 0.69028349290764435d)]
             public void Given__ExampleWeightsFor221Net__HasExpectedFiringRatesAndOutput(double[] inputs, double[] inputToHidden, double[] hiddenToOutput, double expectedH0, double expectedH1, double expectedOutput)
             {
                 var net = NeuralNet3LayerSigmoid.FromFlatWeightArrays(2, inputToHidden, hiddenToOutput);
