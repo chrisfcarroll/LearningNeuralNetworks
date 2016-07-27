@@ -32,17 +32,13 @@ namespace LearningNeuralNetworks.LearningAlgorithms
         static V1.Pair<TData,TLabel>[] SelectSample<TData, TLabel>(V1.Pair<TData, TLabel>[] trainingData, int sampleSize)
         {
             var populationSize = trainingData.Length;
-            if (sampleSize >= populationSize) throw new ArgumentException("Batch size must be smaller than population size", nameof(sampleSize));
-            var batch = new V1.Pair<TData, TLabel>[sampleSize];
-            var batchSelection = new HashSet<int>();
             var rnd = new Random();
-            int element;
-            for (int e = 0; e < sampleSize; e++)
-            {
-                do { element = rnd.Next(populationSize); } while (batchSelection.Contains(element));
-                batchSelection.Add(element);
-                batch[e] = trainingData[element];
-            }
+            var batch = Enumerable
+                                    .Range(0, populationSize)
+                                    .OrderBy(i => rnd.Next())
+                                    .Take(sampleSize)
+                                    .Select(i => trainingData[i])
+                                    .ToArray();
             return batch;
         }
     }

@@ -14,9 +14,9 @@ namespace LearningNeuralNetworks.Tests.V1
         [TestFixture]
         public class LearnsNetworks
         {
-            [TestCase(10, 100, 1, 200, 10, 100)]
-            [TestCase(10,  52, 1, 200,  5, 100)]
-            [TestCase(10,  26, 1, 200,  3, 100)]
+            [TestCase(10, 10, 1, 200, 1, 100)]
+            [TestCase(10, 26, 1, 200, 2, 100)]
+            [TestCase(10, 52, 1, 200, 3, 100)]
             public void Given__ASigmoidNetworkOfSuitableSize__AndSomeTrainingData(int inputLayerSize, int hiddenLayerSize, int outputLayerSize, int iterations, double trainingRate, int trainingSamplesCount)
             {
                 var rawNet = new NeuralNet3LayerSigmoid(inputLayerSize, hiddenLayerSize, outputLayerSize).Randomize(2);
