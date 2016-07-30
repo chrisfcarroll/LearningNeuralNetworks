@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -50,7 +51,7 @@
     <Compile Include="Maths\MatrixD_Comparison.cs" />
     <Compile Include="Maths\MatrixD_Conversions.cs" />
     <Compile Include="Maths\MatrixD_Builders.cs" />
-    <Compile Include="NNDL3LayerSigmoid.cs" />
+    <Compile Include="NNSigmoid.cs" />
     <Compile Include="V1\Neuron_Builders.cs" />
     <Compile Include="V1\SensorNeuronBuilder.cs" />
     <Compile Include="LearningAlgorithms\BackPropagationWithGradientDescent.cs" />

@@ -6,9 +6,6 @@ namespace LearningNeuralNetworks.Maths
     /// <summary>A Matrix of System.Double</summary>
     public partial class MatrixD
     {
-        public static implicit operator double[][](MatrixD matrix){ return matrix.ByRows(); }
-        public static implicit operator MatrixD(double[][] double2dArray) { return new MatrixD(double2dArray); }
-
         public double[][] ByRows()
         {
             return Copy().data;

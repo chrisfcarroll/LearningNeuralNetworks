@@ -8,6 +8,20 @@ namespace LearningNeuralNetworks.Maths
     /// <summary>A Matrix of System.Double</summary>
     public partial class MatrixD 
     {
+        public static implicit operator double[][] (MatrixD matrix) { return matrix.ByRows(); }
+        public static implicit operator MatrixD(double[][] double2dArray) { return new MatrixD(double2dArray); }
+
+        public static MatrixD NewRandom(int rowCount, int columnCount, [Optional] Random random, double scale=1d, double centredOn = 0d)
+        {
+            var rnd = random?? new Random();
+            var result = new double[rowCount][];
+            for (int i = 0; i < rowCount; i++)
+            {
+                result[i] = Enumerable.Range(0, columnCount).Select(j => rnd.NextDouble() * scale + centredOn - 0.5).ToArray();
+            }
+            return new MatrixD(result);
+        }
+
         public MatrixD(int rowCount, int columnCount)
         {
             RowCount = rowCount;
@@ -29,6 +43,7 @@ namespace LearningNeuralNetworks.Maths
             data = new double[rowCount][];
             for (int i = 0; i < rowCount; i++)
             {
+                data[i] = new double[columnCount];
                 Array.Copy(row,data[i],columnCount);
             }
         }

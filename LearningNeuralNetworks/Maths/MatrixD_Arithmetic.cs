@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Text;
 using LearningNeuralNetworks.Frameworks;
 
 namespace LearningNeuralNetworks.Maths
@@ -14,6 +11,9 @@ namespace LearningNeuralNetworks.Maths
         public int ColumnCount { get; }
         public int RowCount { get; }
         readonly double[][] data;
+
+        public static MatrixD dot(MatrixD left, MatrixD right) { return left * right; }
+        public MatrixD dot(MatrixD right) { return this * right; }
 
         public static MatrixD operator *(MatrixD left, MatrixD right)
         {

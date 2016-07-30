@@ -12,30 +12,16 @@ namespace LearningNeuralNetworks
 {
     static class np
     {
-        static Random NewRandom() => new Random();
-
-        public static double[][] random_randn(int size0, int size1)
-        {
-            var rnd = NewRandom();
-            var result = new double[size0][];
-            for (int i = 0; i < size0; i++)
-            {
-                result[i] = Enumerable.Range(0, size1).Select(j => rnd.NextDouble()).ToArray();
-            }
-            return result;
-        }
-
-        public static MatrixD dot(MatrixD left, MatrixD right) { return left * right; }
     }
 
-    class NNDL3LayerSigmoid
+    class NNSigmoid
     {
-        readonly int layerCount;
-        MatrixD[] biases;
-        MatrixD[] weights;
+        internal readonly int LayerCount;
+        internal MatrixD[] Biases;
+        internal MatrixD[] Weights;
         public TextWriter ConsoleOut = Console.Out;
 
-        public NNDL3LayerSigmoid(int[] sizes)
+        public NNSigmoid(int[] sizes)
         {
             /*
             """The list ``sizes`` contains the number of neurons in the
@@ -49,25 +35,72 @@ namespace LearningNeuralNetworks
             won't set any biases for those neurons, since biases are only
             ever used in computing the outputs from later layers.
             */
-            layerCount = sizes.Length;
+            LayerCount = sizes.Length;
 
             //this.biases = [np.random_randn(y, 1) for y in sizes[1:]]
-            biases = Enumerable.Range(1, layerCount).Select(y =>  (MatrixD)(np.random_randn(sizes[y], 1) )).ToArray();
+            Biases = Enumerable.Range(1, LayerCount-1).Select(y =>  MatrixD.NewRandom(sizes[y], 1)).ToArray();
 
             //this.weights = [np.random.randn(y, x) for x, y in zip(sizes[:-1], sizes[1:])]
-            weights = Enumerable.Range(0, layerCount - 1).Select(i => (MatrixD)np.random_randn(sizes[i + 1], sizes[i])).ToArray();
+            Weights = Enumerable.Range(0, LayerCount - 1).Select(i => MatrixD.NewRandom(sizes[i + 1], sizes[i])).ToArray();
         }
 
-        MatrixD feedforward(MatrixD input)
+        public NNSigmoid(MatrixD[] weights, MatrixD[] biases)
+        {
+            (weights.Length==biases.Length).ElseThrow(new ArgumentOutOfRangeException(nameof(biases),"The list of weights must be the same length as the list of biases"));
+            (weights.Length>0).ElseThrow(new ArgumentOutOfRangeException(nameof(weights),"The weights & biases arrays must be length at least 1"));
+            biases.All(b => b.ColumnCount == 1).ElseThrow(new ArgumentOutOfRangeException("biases", "The biases must all be Nx1 matrices (i.e. column vectors)"));
+            weights.Aggregate(
+                weights[0].RowCount, 
+                (lastColumnCount, w)=> {
+                    (lastColumnCount == w.RowCount).ElseThrow(new ArgumentOutOfRangeException("weights", "The ColumnCount of each weight matrix musts match the RowCount of the following matrix"));
+                    return w.ColumnCount;
+                });
+            weights.Zip(biases, (w, b) => (w.ColumnCount == b.RowCount).ElseThrow(new ArgumentOutOfRangeException("weights", "The ColumnCount of each Weight Matrix must match the RowCount of its Bias matrix")));
+            //
+
+            LayerCount = weights.Length + 1;
+            Biases = biases;
+            Weights = weights;
+        }
+
+        public static NNSigmoid FromFlatWeightArrays(int inputLength, double[] inputToHiddenWeights, double[] hiddenToOutputWeights)
+        {
+            var hiddenLength = (int)Math.Sqrt(inputToHiddenWeights.Length);
+            var outputLength = hiddenToOutputWeights.Length / hiddenLength;
+            var inputToHiddenWeightMatrix = new double[inputLength][];
+            for (int r = 0; r < inputLength; r++)
+            {
+                inputToHiddenWeightMatrix[r] = new double[hiddenLength];
+                for (int c = 0; c < hiddenLength; c++)
+                {
+                    inputToHiddenWeightMatrix[r][c] = inputToHiddenWeights[r*hiddenLength + c];
+                }
+            }
+            var hiddenToOutputWeightMatrix = new double[hiddenLength][];
+            for (int r = 0; r < hiddenLength; r++)
+            {
+                hiddenToOutputWeightMatrix[r]= new double[outputLength];
+                for (int c = 0; c < outputLength; c++)
+                {
+                    hiddenToOutputWeightMatrix[r][c] = hiddenToOutputWeights[r*outputLength + c];
+                }
+            }
+            return new NNSigmoid( 
+                new [] { new MatrixD(inputToHiddenWeightMatrix), new MatrixD(hiddenToOutputWeightMatrix) },
+                new [] { new MatrixD(hiddenLength,1,0), new MatrixD(outputLength, 1, 0) });
+        }
+
+
+        internal MatrixD feedforward(MatrixD input)
         {
             /*Return the output of the network if ``a`` is input.*/
             //for b, w in zip(this.biases, this.weights): a = sigmoid(np.dot(w, a) + b)
             var a = input;
-            biases.Zip(weights, (b, w) => { return a = (MatrixD) b + sigmoid(w*a); });
+            Biases.Zip(Weights, (b, w) => { return a = (MatrixD) b + sigmoid(w*a); });
             return a;
         }
 
-        public NNDL3LayerSigmoid SGD(IEnumerable<Pair<MatrixD, MatrixD>> training_data , int epochs , int mini_batch_size , double eta , IEnumerable<Pair<MatrixD, MatrixD>> test_data = null)
+        public NNSigmoid SGD(IEnumerable<Pair<MatrixD, MatrixD>> training_data , int epochs , int mini_batch_size , double eta , IEnumerable<Pair<MatrixD, MatrixD>> test_data = null)
         {
             /*Train the neural network using mini-batch stochastic
             gradient descent.  The ``training_data`` is a list of tuples
@@ -121,8 +154,8 @@ namespace LearningNeuralNetworks
 
             // nabla_b = [np.zeros(b.shape) for b in self.biases]
             // nabla_w = [np.zeros(w.shape) for w in self.weights]
-            var nabla_b = biases.Select(b => new MatrixD(b.RowCount, b.ColumnCount)).ToArray();
-            var nabla_w = weights.Select(w => new MatrixD(w.RowCount, w.ColumnCount)).ToArray();
+            var nabla_b = Biases.Select(b => new MatrixD(b.RowCount, b.ColumnCount)).ToArray();
+            var nabla_w = Weights.Select(w => new MatrixD(w.RowCount, w.ColumnCount)).ToArray();
             var sampleSize = mini_batch.Count();
 
             foreach(var pair in mini_batch)
@@ -140,11 +173,11 @@ namespace LearningNeuralNetworks
             // self.weights = [w - (eta / len(mini_batch)) * nw for w, nw in zip(self.weights, nabla_w)]
             // self.biases = [b - (eta / len(mini_batch)) * nb for b, nb in zip(self.biases, nabla_b)]
 
-            weights = weights.Zip(nabla_w, (w, nabla) => w - nabla * (eta / sampleSize)).ToArray();
-            biases  = biases.Zip( nabla_b, (b, nabla) => b - nabla * (eta / sampleSize)).ToArray();
+            Weights = Weights.Zip(nabla_w, (w, nabla) => w - nabla * (eta / sampleSize)).ToArray();
+            Biases  = Biases.Zip( nabla_b, (b, nabla) => b - nabla * (eta / sampleSize)).ToArray();
         }
 
-        Tuple<MatrixD[],MatrixD[]> backprop(MatrixD input , MatrixD target )
+        internal Tuple<MatrixD[],MatrixD[]> backprop(MatrixD input , MatrixD target )
         {
             /*Return a tuple ``(nabla_b, nabla_w)`` representing the
             gradient for the cost function C_x.  ``nabla_b`` and
@@ -154,8 +187,8 @@ namespace LearningNeuralNetworks
             //nabla_b = [np.zeros(b.shape) for b in this.biases]
             //nabla_w = [np.zeros(w.shape) for w in this.weights] 
 
-            var nabla_b = biases.Select(b => new MatrixD(b.RowCount, b.ColumnCount)).ToArray();
-            var nabla_w = weights.Select(w => new MatrixD(w.RowCount, w.ColumnCount)).ToArray();
+            var nabla_b = Biases.Select(b => new MatrixD(b.RowCount, b.ColumnCount)).ToArray();
+            var nabla_w = Weights.Select(w => new MatrixD(w.RowCount, w.ColumnCount)).ToArray();
 
             // feedforward
             var activation = input;
@@ -163,7 +196,7 @@ namespace LearningNeuralNetworks
             var zs = new List<double[][]>(); // list to store all the z vectors, layer by layer
 
             //for b, w in zip(this.biases, this.weights):
-            foreach (var layer in biases.Zip(weights, (b, w) => new {Bias = b, Weight = w}))
+            foreach (var layer in Biases.Zip(Weights, (b, w) => new {Bias = b, Weight = w}))
             {
                 var z = layer.Weight * activation + layer.Bias;
                 zs.Add(z);
@@ -186,10 +219,10 @@ namespace LearningNeuralNetworks
             // that Python can use negative indices in lists.
 
             //for l in xrange(2, this.num_layers):
-            for (int l = 2; l < layerCount; l++)
+            for (int l = 2; l < LayerCount; l++)
             {
                 var z = zs.Last();
-                delta = weights[weights.Length + 1 - l].T() * delta * sigmoid_prime(z);
+                delta = Weights[Weights.Length + 1 - l].T() * delta * sigmoid_prime(z);
                 nabla_b[nabla_b.Length - l] = delta;
                 nabla_w[nabla_b.Length - l] = delta * activations[-l - 1].AsMatrixD().T();
             }

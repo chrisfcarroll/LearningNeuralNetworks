@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LearningNeuralNetworks.Frameworks
 {
@@ -12,15 +7,9 @@ namespace LearningNeuralNetworks.Frameworks
     /// </summary>
     public static class RuntimeAssertions
     {
-        public static void ElseThrow(this bool assertion, string message)
-        {
-            ElseThrow(assertion, new AssertionFailedException(message));
-        }
+        public static bool ElseThrow(this bool assertion, Exception exception) { if (assertion) return true; else throw exception; }
 
-        public static void ElseThrow(this bool assertion, Exception exception)
-        {
-            if (!assertion) throw exception;
-        }
+        public static bool ElseThrow(this bool assertion, string message){ return ElseThrow(assertion, new AssertionFailedException(message)); }
 
         public class AssertionFailedException : Exception
         {
