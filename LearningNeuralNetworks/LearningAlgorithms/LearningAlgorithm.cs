@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LearningNeuralNetworks.Frameworks;
 using MnistParser;
 
 namespace LearningNeuralNetworks.LearningAlgorithms
@@ -21,25 +22,15 @@ namespace LearningNeuralNetworks.LearningAlgorithms
 
         public virtual InterpretedNet<TData, TLabel> ApplyToBatches<TData, TLabel>(InterpretedNet<TData, TLabel> net, V1.Pair<TData, TLabel>[] trainingData, int batchSize, double trainingRateStart, int iterations = 1)
         {
+            var trainingDataInRandomOrder = trainingData.OrderRandomly();
+
             for (int i = 0; i < iterations; i++)
             {
-                var batch = SelectSample(trainingData, batchSize);
+                var batch = trainingDataInRandomOrder.Skip(i*batchSize).Take(batchSize);
                 Apply(net, batch, trainingRateStart / (1+i) );
             }
             return net;
         }
 
-        static V1.Pair<TData,TLabel>[] SelectSample<TData, TLabel>(V1.Pair<TData, TLabel>[] trainingData, int sampleSize)
-        {
-            var populationSize = trainingData.Length;
-            var rnd = new Random();
-            var batch = Enumerable
-                                    .Range(0, populationSize)
-                                    .OrderBy(i => rnd.Next())
-                                    .Take(sampleSize)
-                                    .Select(i => trainingData[i])
-                                    .ToArray();
-            return batch;
-        }
     }
 }

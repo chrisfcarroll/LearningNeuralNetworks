@@ -62,6 +62,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Maths\MatricesD.cs" />
     <Compile Include="V1\TheBackPropagationWithGradientDescentAlgorithm_HiddenLayerDeltas.cs" />
     <Compile Include="V1\TheBackPropagationWithGradientDescentAlgorithm_LearnsNetworks.cs" />
     <Compile Include="V1\TheBackPropagationWithGradientDescentAlgorithm_OutputLayerDeltas.cs" />
