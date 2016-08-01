@@ -50,12 +50,12 @@ namespace LearningNeuralNetworks
             (weights.Length>0).ElseThrow(new ArgumentOutOfRangeException(nameof(weights),"The weights & biases arrays must be length at least 1"));
             biases.All(b => b.ColumnCount == 1).ElseThrow(new ArgumentOutOfRangeException("biases", "The biases must all be Nx1 matrices (i.e. column vectors)"));
             weights.Aggregate(
-                weights[0].RowCount, 
-                (lastColumnCount, w)=> {
-                    (lastColumnCount == w.RowCount).ElseThrow(new ArgumentOutOfRangeException("weights", "The ColumnCount of each weight matrix musts match the RowCount of the following matrix"));
-                    return w.ColumnCount;
+                weights[0].ColumnCount, 
+                (lastRowCount, w)=> {
+                    (lastRowCount == w.ColumnCount).ElseThrow(new ArgumentOutOfRangeException("weights", "The RowCount of each weight matrix must match the ColumnCount of the following weight matrix"));
+                    return w.RowCount;
                 });
-            weights.Zip(biases, (w, b) => (w.ColumnCount == b.RowCount).ElseThrow(new ArgumentOutOfRangeException("weights", "The ColumnCount of each Weight Matrix must match the RowCount of its Bias matrix")));
+            weights.Zip(biases, (w, b) => (w.RowCount == b.RowCount).ElseThrow(new ArgumentOutOfRangeException("weights", "The RowCount of each Weight Matrix must match the RowCount of its Bias matrix")));
             //
 
             LayerCount = weights.Length + 1;
@@ -65,24 +65,24 @@ namespace LearningNeuralNetworks
 
         public static NNSigmoid FromFlatWeightArrays(int inputLength, double[] inputToHiddenWeights, double[] hiddenToOutputWeights)
         {
-            var hiddenLength = (int)Math.Sqrt(inputToHiddenWeights.Length);
+            var hiddenLength = inputToHiddenWeights.Length / inputLength;
             var outputLength = hiddenToOutputWeights.Length / hiddenLength;
-            var inputToHiddenWeightMatrix = new double[inputLength][];
-            for (int r = 0; r < inputLength; r++)
-            {
-                inputToHiddenWeightMatrix[r] = new double[hiddenLength];
-                for (int c = 0; c < hiddenLength; c++)
-                {
-                    inputToHiddenWeightMatrix[r][c] = inputToHiddenWeights[r*hiddenLength + c];
-                }
-            }
-            var hiddenToOutputWeightMatrix = new double[hiddenLength][];
+            var inputToHiddenWeightMatrix = new double[hiddenLength][];
             for (int r = 0; r < hiddenLength; r++)
             {
-                hiddenToOutputWeightMatrix[r]= new double[outputLength];
-                for (int c = 0; c < outputLength; c++)
+                inputToHiddenWeightMatrix[r] = new double[inputLength];
+                for (int c = 0; c < inputLength; c++)
                 {
-                    hiddenToOutputWeightMatrix[r][c] = hiddenToOutputWeights[r*outputLength + c];
+                    inputToHiddenWeightMatrix[r][c] = inputToHiddenWeights[r * inputLength + c];
+                }
+            }
+            var hiddenToOutputWeightMatrix = new double[outputLength][];
+            for (int r = 0; r < outputLength; r++)
+            {
+                hiddenToOutputWeightMatrix[r]= new double[hiddenLength];
+                for (int c = 0; c < hiddenLength; c++)
+                {
+                    hiddenToOutputWeightMatrix[r][c] = hiddenToOutputWeights[r * hiddenLength + c];
                 }
             }
             return new NNSigmoid( 
@@ -198,7 +198,7 @@ namespace LearningNeuralNetworks
             //for b, w in zip(this.biases, this.weights):
             foreach (var layer in Biases.Zip(Weights, (b, w) => new {Bias = b, Weight = w}))
             {
-                var z = layer.Weight * activation + layer.Bias;
+                var z = layer.Weight.dot(activation) + layer.Bias;
                 zs.Add(z);
                 activation = sigmoid(z);
                 activations.Add(activation);
@@ -206,10 +206,10 @@ namespace LearningNeuralNetworks
 
             // backward pass
             //delta = this.cost_derivative(activations[-1], y)*sigmoid_prime(zs[-1])
-            var delta = cost_derivative(activations.Last(), target) * sigmoid_prime(zs.Last());
+            var delta = cost_derivative(activations.Last(), target).ZipTimes( sigmoid_prime(zs.Last()) );
 
             nabla_b[nabla_b.Length-1] = delta;
-            nabla_w[nabla_w.Length-1] = delta * (activations.OrderByReverse().Skip(2).First()).AsMatrixD().T();
+            nabla_w[nabla_w.Length-1] = delta * activations.OrderByReverse().Skip(1).First().AsMatrixD().T();
 
             // Note that the variable l in the loop below is used a little
             // differently to the notation in Chapter 2 of the book.  Here,
@@ -221,12 +221,12 @@ namespace LearningNeuralNetworks
             //for l in xrange(2, this.num_layers):
             for (int l = 2; l < LayerCount; l++)
             {
-                var z = zs.Last();
-                delta = Weights[Weights.Length + 1 - l].T() * delta * sigmoid_prime(z);
+                var z = zs[zs.Count - l];
+                delta = Weights[Weights.Length + 1 - l].T().dot(delta).ZipTimes( sigmoid_prime(z) );
                 nabla_b[nabla_b.Length - l] = delta;
-                nabla_w[nabla_b.Length - l] = delta * activations[-l - 1].AsMatrixD().T();
+                nabla_w[nabla_b.Length - l] = delta * activations[activations.Count - l - 1].AsMatrixD().T();
             }
-            return Tuple.Create(nabla_b, nabla_w);
+            return Tuple.Create(nabla_w, nabla_b);
         }
 
         public int evaluate(IEnumerable<Pair<MatrixD,MatrixD>> test_data )
